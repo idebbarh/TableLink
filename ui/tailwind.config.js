@@ -9,6 +9,9 @@ module.exports = {
       boxShadow: {
         formShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px;",
       },
+      gridTemplateColumns: {
+        "auto-fit": "repeat(auto-fit, minmax(250px, 1fr))",
+      },
     },
   },
   plugins: [],
