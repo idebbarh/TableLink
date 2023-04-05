@@ -1,5 +1,6 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import UserTypeSwitcher from "../../../components/notAuth/UserTypeSwitcher";
 
 const heroData = {
   0: {
@@ -11,47 +12,23 @@ const heroData = {
     shortDescription: "Improve Communication and Serve Customers Efficiently.",
   },
 };
+
 function Hero() {
-  const [activeSection, setActiveSection] = useState<1 | 0>(0);
+  const [currentUser, setCurrentUser] = useState<1 | 0>(0);
+
   return (
     <div className="px-20 py-10">
-      <div className="p-3 border border-solid border-black relative flex items-center gap-8 w-[500px] mb-10">
-        <div
-          className="absolute bg-mainBlue h-full z-[-1] left-0 transition-transform duration-300 ease-in-out"
-          style={{
-            width: "50%",
-            transform:
-              activeSection === 0 ? "translateX(0)" : `translateX(100%)`,
-          }}
-        />
-        <h3
-          className={`flex-1 font-semibold text-lg transition-colors duration-300 ease-in-out w-[calc(50%-32px)] cursor-pointer ${
-            activeSection === 0 ? "text-white" : "text-[#343434]"
-          }`}
-          onClick={() => {
-            setActiveSection(0);
-          }}
-        >
-          Customer
-        </h3>
-        <h3
-          className={`flex-1 font-semibold text-lg transition-colors duration-300 ease-in-out w-[calc(50%-32px)] cursor-pointer ${
-            activeSection === 1 ? "text-white" : "text-[#343434]"
-          }`}
-          onClick={() => {
-            setActiveSection(1);
-          }}
-        >
-          Restaurant Owners
-        </h3>
-      </div>
-      <h1 className="text-[4rem] font-bold max-w-[600px]">
-        {heroData[activeSection].title}
+      <UserTypeSwitcher
+        currentUser={currentUser}
+        setCurrentUser={setCurrentUser}
+      />
+      <h1 className="mt-10 text-[4rem] font-bold max-w-[600px]">
+        {heroData[currentUser].title}
       </h1>
       <p className="text-xl my-10">
-        {heroData[activeSection].shortDescription}
+        {heroData[currentUser].shortDescription}
       </p>
-      {activeSection === 0 ? (
+      {currentUser === 0 ? (
         <Link
           to="/explore"
           className="block w-fit text-white font-semibold text-lg bg-mainBlue px-8 py-4 rounded-3xl"
