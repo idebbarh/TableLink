@@ -75,7 +75,7 @@ function Header() {
           }}
         />
       )}
-      <Link to="/" className="text-3xl font-bold text-[#343434]">
+      <Link to="/" className="block text-3xl font-bold text-[#343434]">
         TableLink
       </Link>
       <nav>
