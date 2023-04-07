@@ -7,6 +7,7 @@ import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import { useForm } from "react-hook-form";
 
 interface BookingsFormData {
+    name:string;
   date: string;
   time: string;
   guests: string;
@@ -30,6 +31,7 @@ function RestaurantDetails() {
 
   const bokingHanlder = (data: BookingsFormData) => {
     if (!user) {
+            setValue("name","");
       setValue("date", "");
       setValue("time", "");
       setValue("guests", "");
@@ -101,10 +103,26 @@ function RestaurantDetails() {
         Book a table
       </h2>
       <form
-        className="border border-solid border-gray-200 p-6 rounded-3xl flex gap-4 shadow-formShadow items-start w-fit"
+        className="border border-solid border-gray-200 p-6 rounded-3xl flex flex-col max-w-[600px] gap-4 shadow-formShadow items-start"
         onSubmit={handleSubmit(bokingHanlder)}
       >
-        <div className="flex flex-col gap-2">
+
+        <div className="flex flex-col gap-2 w-full">
+
+            <label htmlFor="name" className="text-sm text-gray-500">
+                Name
+            </label>
+            <input
+                {...register("name", { required: "Please entre a name" })}
+                type="text"
+                name="name"
+                id="name"
+                className="border border-solid border-gray-200 rounded-lg p-2"
+            />
+            {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+        </div>
+
+        <div className="flex flex-col gap-2 w-full">
           <label htmlFor="date" className="text-sm text-gray-500">
             Date
           </label>
@@ -117,7 +135,7 @@ function RestaurantDetails() {
           />
           {errors.date && <p className="text-red-500">{errors.date.message}</p>}
         </div>
-        <div className="flex flex-col gap-2 ">
+        <div className="flex flex-col gap-2 w-full">
           <label htmlFor="time" className="text-sm text-gray-500">
             Time
           </label>
@@ -130,7 +148,7 @@ function RestaurantDetails() {
           />
           {errors.time && <p className="text-red-500">{errors.time.message}</p>}
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 w-full">
           <label htmlFor="guests" className="text-sm text-gray-500">
             Guests
           </label>
@@ -155,6 +173,7 @@ function RestaurantDetails() {
           check availability
         </button>
       </form>
+
       {successMessage && (
         <p className="text-green-500 text-lg font-semibold">{successMessage}</p>
       )}

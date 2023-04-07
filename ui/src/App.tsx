@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import Dashboard from "./screens/auth/Dashboard";
+import Dashboard from "./screens/auth/dashboard/Dashboard";
 import Explore from "./screens/notAuth/explore/Explore";
 import Home from "./screens/notAuth/home/Home";
 import NotAuth from "./screens/notAuth/NotAuth";
@@ -9,11 +9,11 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route element={<NotAuth/>} >
-            <Route path="/" element={<Home />} />
-            <Route path="/explore/*" element={<Explore />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/signin" element={<Signin />} />
+        <Route element={<NotAuth />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/explore/*" element={<Explore />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/signin" element={<Signin />} />
         </Route>
         <Route path="/dashboard/*" element={<Dashboard />} />
       </Routes>
