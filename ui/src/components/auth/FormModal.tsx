@@ -1,8 +1,13 @@
-import { FormEventHandler, useState } from "react";
+import { useState } from "react";
+import CloseIcon from "@mui/icons-material/Close";
+
+type IPossibleData = (IMenuItem & IEmployee) & { [key: string]: string };
 
 interface FormModalProps {
-  page: string;
-  fields: string[];
+  pageTitle: string;
+  addFormData: (data: IPossibleData) => void;
+  fields: { name: string; type: string }[];
+  closeModal: () => void;
 }
 interface IFormModal {
   [key: string]: {
@@ -11,7 +16,12 @@ interface IFormModal {
   };
 }
 
-function FormModal({ page, fields }: FormModalProps) {
+function FormModal({
+  pageTitle,
+  addFormData,
+  fields,
+  closeModal,
+}: FormModalProps) {
   const [formData, setFormData] = useState<IFormModal | null>(null);
 
   const submitHandler = (e: React.FormEvent) => {
@@ -21,17 +31,17 @@ function FormModal({ page, fields }: FormModalProps) {
     fields.forEach((field) => {
       if (
         formData === null ||
-        formData[field] === undefined ||
-        formData[field].value === ""
+        formData[field.name] === undefined ||
+        formData[field.name].value === ""
       ) {
-        newFormData[field] = {
+        newFormData[field.name] = {
           value: "",
-          error: field + " is required",
+          error: field.name + " is required",
         };
         isErrors = true;
       } else {
-        newFormData[field] = {
-          ...formData[field],
+        newFormData[field.name] = {
+          ...formData[field.name],
         };
       }
     });
@@ -41,7 +51,14 @@ function FormModal({ page, fields }: FormModalProps) {
       return;
     }
 
-    console.log(formData);
+    if (formData !== null && addFormData !== undefined) {
+      let newData: IPossibleData = {} as IPossibleData;
+      for (let key in formData) {
+        newData[key] = formData[key].value;
+      }
+      addFormData(newData);
+      closeModal();
+    }
   };
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -57,30 +74,38 @@ function FormModal({ page, fields }: FormModalProps) {
   };
 
   return (
-    <div className="z-50 absolute -top-[80px] right-0 h-screen min-w-[400px] p-4 bg-gray-100 border-l-2 border-gray-300">
-      <h1 className="text-2xl font-bold capitalize">add an {page}</h1>
+    <div className="z-50 absolute -top-[80px] right-0 h-screen min-w-[400px] px-6 pb-6 pt-14 bg-gray-100 border-l-2 border-gray-300">
+      <div
+        className="absolute right-4 top-4 cursor-pointer"
+        onClick={closeModal}
+      >
+        <CloseIcon fontSize="large" />
+      </div>
+      <h1 className="text-2xl font-bold capitalize">{pageTitle}</h1>
       <form className="mt-4" onSubmit={submitHandler}>
         {fields.map((field, index) => (
           <div className="flex flex-col mb-4" key={index}>
-            <label htmlFor={field} className="capitalize">
-              {field}
+            <label htmlFor={field.name} className="capitalize">
+              {field.name}
             </label>
             <input
-              name={field}
-              type="text"
-              id={field}
+              name={field.name}
+              type={field.type}
+              id={field.name}
               className="border border-solid border-gray-300 p-2 rounded-md"
               value={
-                formData !== null && formData[field] !== undefined
-                  ? formData[field].value
+                formData !== null && formData[field.name] !== undefined
+                  ? formData[field.name].value
                   : ""
               }
               onChange={changeHandler}
             />
             {formData !== null &&
-              formData[field] !== undefined &&
-              formData[field].error !== null && (
-                <p className="text-red-500 text-sm">{formData[field].error}</p>
+              formData[field.name] !== undefined &&
+              formData[field.name].error !== null && (
+                <p className="text-red-500 text-sm">
+                  {formData[field.name].error}
+                </p>
               )}
           </div>
         ))}
