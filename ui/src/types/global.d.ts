@@ -22,3 +22,11 @@ declare interface IMenuItem{
         name:string,
     }[] | string,
 }
+
+declare interface IReservation{
+    id:number,
+    name:string,
+    date:string,
+    time:string,
+    people:number,
+}

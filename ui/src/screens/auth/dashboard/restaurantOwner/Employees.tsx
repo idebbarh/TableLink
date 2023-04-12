@@ -8,38 +8,42 @@ function Employees() {
       id: 1,
       name: "John Doe",
       job: "chef",
-    email:"test@gmail.com",
-    password:"test",
+      email: "test@gmail.com",
+      password: "test",
     },
     {
       id: 2,
       name: "Jane Doe",
       job: "waiter",
-            email:"test@gmail.com",
+      email: "test@gmail.com",
 
-            password:"test",
+      password: "test",
     },
     {
       id: 3,
       name: "John Smith",
       job: "waiter",
-            email:"test@gmail.com",
+      email: "test@gmail.com",
 
-            password:"test",
+      password: "test",
     },
     {
       id: 4,
       name: "Jane Smith",
       job: "chef",
-            email:"test@gmail.com",
-            password:"test",
+      email: "test@gmail.com",
+      password: "test",
     },
   ]);
 
   const addNewEmployee = (employee: IEmployee) => {
     const id = employees.length + 1;
-    console.log([...employees, { ...employee, id }]);
     setEmployees((prev) => [...prev, { ...employee, id }]);
+  };
+
+  const removeEmployee = (id: number | undefined) => {
+        if(typeof id === 'undefined') return;
+    setEmployees((prev) => prev.filter((item) => item.id !== id));
   };
 
   return (
@@ -72,7 +76,8 @@ function Employees() {
             <th className="border border-solid border-black p-2">id</th>
             <th className="border border-solid border-black p-2">name</th>
             <th className="border border-solid border-black p-2">job</th>
-                        <th className="border border-solid border-black p-2">email</th>
+            <th className="border border-solid border-black p-2">email</th>
+            <th className="border border-solid border-black p-2">actions</th>
           </tr>
         </thead>
         <tbody>
@@ -87,8 +92,16 @@ function Employees() {
               <td className="border border-solid border-black p-2">
                 {employee.job}
               </td>
-                <td className="border border-solid border-black p-2">
+              <td className="border border-solid border-black p-2">
                 {employee.email}
+              </td>
+                <td className="border border-solid border-black p-2">
+                <button
+                    className="bg-red-500 text-white px-4 py-2 rounded-md"
+                    onClick={() => removeEmployee(employee.id)}
+                    >
+                    Remove
+                </button>
                 </td>
             </tr>
           ))}

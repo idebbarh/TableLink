@@ -1,3 +1,4 @@
+import { removeListener } from "process";
 import { useState } from "react";
 import FormModal from "../../../../components/auth/FormModal";
 import { restaurants } from "../../../notAuth/explore/Explore";
@@ -71,6 +72,10 @@ function MainMenu() {
     }
     setMenu((prev) => [...prev, { ...menuItem, id }]);
   };
+
+    const removeMenuItem = (id:number)=>{
+        setMenu(prev=>prev.filter(item=>item.id !== id))
+    }
   return (
     <>
       {isModalOpen && (
@@ -107,6 +112,7 @@ function MainMenu() {
             <th className="border border-solid border-black p-2">
               Ingredients
             </th>
+            <th className="border border-solid border-black p-2">actions</th>
           </tr>
         </thead>
         <tbody>
@@ -128,6 +134,11 @@ function MainMenu() {
                 })}
               </td>
             )}
+                <td>
+                    <button className="bg-red-500 text-white px-4 py-2 rounded-md" onClick={()=>removeMenuItem(item.id)}>
+                        Delete
+                    </button>
+                </td>
             </tr>
           ))}
         </tbody>
