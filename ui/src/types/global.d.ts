@@ -4,29 +4,30 @@ declare interface SideBarOptionType {
 }
 
 declare interface IEmployee {
-  id?: number;
+  id: number;
   name: string;
   job: string;
-    email:string,
-    password:string,
+  email: string;
+  password: string;
 }
 
-
-declare interface IMenuItem{
-    id:number,
-    name:string,
-    price:number,
-    description:string,
-    ingredients:{
-        id:number,
-        name:string,
-    }[] | string,
+declare interface IMenuItem {
+  id: number;
+  name: string;
+  price: string;
+  description: string;
+  ingredients:
+    | {
+        id: number;
+        name: string;
+      }[]
+    | string;
 }
 
-declare interface IReservation{
-    id:number,
-    name:string,
-    date:string,
-    time:string,
-    people:number,
+declare interface IReservation {
+  id: number;
+  name: string;
+  date: string;
+  time: string;
+  people: number;
 }

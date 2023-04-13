@@ -1,41 +1,41 @@
 import { removeListener } from "process";
 import { useState } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function Reservations() {
-    const [reservations,setReservations] = useState<IReservation[]>(
-            [
-              {
-                id: 1,
-                name: "John Doe",
-                date: "2021-10-10",
-                time: "12:00",
-                people: 2,
-              },
-              {
-                id: 2,
-                name: "Jane Doe",
-                date: "2021-10-10",
-                time: "12:00",
-                people: 2,
-              },
-              {
-                id: 3,
-                name: "John Smith",
-                date: "2021-10-10",
-                time: "12:00",
-                people: 2,
-              },
-              {
-                id: 4,
-                name: "Jane Smith",
-                date: "2021-10-10",
-                time: "12:00",
-                people: 2,
-              },
-            ])
-    const removeReservation = (id:number)=>{
-        setReservations(prev=>prev.filter(item=>item.id !== id))
-    }
+  const [reservations, setReservations] = useState<IReservation[]>([
+    {
+      id: 1,
+      name: "John Doe",
+      date: "2021-10-10",
+      time: "12:00",
+      people: 2,
+    },
+    {
+      id: 2,
+      name: "Jane Doe",
+      date: "2021-10-10",
+      time: "12:00",
+      people: 2,
+    },
+    {
+      id: 3,
+      name: "John Smith",
+      date: "2021-10-10",
+      time: "12:00",
+      people: 2,
+    },
+    {
+      id: 4,
+      name: "Jane Smith",
+      date: "2021-10-10",
+      time: "12:00",
+      people: 2,
+    },
+  ]);
+  const removeReservation = (id: number) => {
+    setReservations((prev) => prev.filter((item) => item.id !== id));
+  };
   return (
     <>
       <h1 className="text-2xl font-bold capitalize">Reservations</h1>
@@ -68,14 +68,16 @@ function Reservations() {
               <td className="border border-solid border-black p-2">
                 {reservation.people}
               </td>
-                <td className="border border-solid border-black p-2">
-                <button
-                    className="bg-red-500 text-white px-4 py-2 rounded-md"
+              <td className="border border-solid border-black p-2">
+                <div className="flex gap-2 items-center justify-center">
+                  <button
+                    className="text-red-500"
                     onClick={() => removeReservation(reservation.id)}
-                    >
-                    Remove
-                </button>
-                </td>
+                  >
+                    <DeleteIcon />
+                  </button>
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>

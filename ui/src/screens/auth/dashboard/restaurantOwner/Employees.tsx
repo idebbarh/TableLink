@@ -1,8 +1,13 @@
+import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import FormModal from "../../../../components/auth/FormModal";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function Employees() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [employeeToEditData, setEmployeeToEditData] =
+    useState<IEmployee | null>(null);
   const [employees, setEmployees] = useState<IEmployee[]>([
     {
       id: 1,
@@ -41,26 +46,65 @@ function Employees() {
     setEmployees((prev) => [...prev, { ...employee, id }]);
   };
 
-  const removeEmployee = (id: number | undefined) => {
-        if(typeof id === 'undefined') return;
+  const removeEmployee = (id: number) => {
     setEmployees((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const editEmployee = (data: IEmployee) => {
+    setEmployeeToEditData(data);
+    setIsModalOpen(true);
+  };
+
+  const updateEmployee = (data: IEmployee) => {
+    if (!employeeToEditData) return;
+    const updatedEmployees = employees.map((employee) => {
+      if (employee.id === employeeToEditData.id) {
+        return { ...data, id: employee.id };
+      }
+      return employee;
+    });
+    setEmployees(updatedEmployees);
+  };
+
+  const closeModal = () => {
+    setEmployeeToEditData(null);
+    setIsModalOpen(false);
   };
 
   return (
     <>
-      {isModalOpen && (
-        <FormModal
-          pageTitle="add new employee"
-          addFormData={(data: IEmployee) => addNewEmployee(data)}
-          fields={[
-            { name: "name", type: "text" },
-            { name: "job", type: "text" },
-            { name: "email", type: "email" },
-            { name: "password", type: "password" },
-          ]}
-          closeModal={() => setIsModalOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {isModalOpen && (
+          <FormModal
+            pageTitle="add new employee"
+            getData={(data: IEmployee) => {
+              employeeToEditData !== null
+                ? updateEmployee(data)
+                : addNewEmployee(data);
+            }}
+            fields={[
+              { name: "name", type: "text" },
+              { name: "job", type: "text" },
+              { name: "email", type: "email" },
+              { name: "password", type: "password" },
+            ]}
+            fieldsValue={
+              employeeToEditData !== null
+                ? {
+                    name: { value: employeeToEditData.name, error: null },
+                    job: { value: employeeToEditData.job, error: null },
+                    email: { value: employeeToEditData.email, error: null },
+                    password: {
+                      value: employeeToEditData.password,
+                      error: null,
+                    },
+                  }
+                : undefined
+            }
+            closeModal={closeModal}
+          />
+        )}
+      </AnimatePresence>
       <div className="flex justify-between items-center gap-4">
         <h1 className="text-2xl font-bold capitalize">employees</h1>
         <button
@@ -95,14 +139,23 @@ function Employees() {
               <td className="border border-solid border-black p-2">
                 {employee.email}
               </td>
-                <td className="border border-solid border-black p-2">
-                <button
-                    className="bg-red-500 text-white px-4 py-2 rounded-md"
+              <td className="border border-solid border-black p-2">
+                <div className="flex gap-2 items-center justify-center">
+                  <button
+                    className="text-red-500"
                     onClick={() => removeEmployee(employee.id)}
-                    >
-                    Remove
-                </button>
-                </td>
+                  >
+                    <DeleteIcon />
+                  </button>
+
+                  <button
+                    className="text-blue-500"
+                    onClick={() => editEmployee(employee)}
+                  >
+                    <EditIcon />
+                  </button>
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>

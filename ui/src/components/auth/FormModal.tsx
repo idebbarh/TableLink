@@ -1,12 +1,19 @@
 import { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
+import { motion } from "framer-motion";
 
-type IPossibleData = (IMenuItem & IEmployee) & { [key: string]: string };
+type IPossibleData = IMenuItem & IEmployee;
 
 interface FormModalProps {
   pageTitle: string;
-  addFormData: (data: IPossibleData) => void;
+  getData: (data: IPossibleData) => void;
   fields: { name: string; type: string }[];
+  fieldsValue?: {
+    [key: string]: {
+      value: string;
+      error: string | null;
+    };
+  };
   closeModal: () => void;
 }
 interface IFormModal {
@@ -18,11 +25,14 @@ interface IFormModal {
 
 function FormModal({
   pageTitle,
-  addFormData,
+  getData,
   fields,
+  fieldsValue,
   closeModal,
 }: FormModalProps) {
-  const [formData, setFormData] = useState<IFormModal | null>(null);
+  const [formData, setFormData] = useState<IFormModal | null>(
+    fieldsValue !== undefined ? fieldsValue : null
+  );
 
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,12 +61,12 @@ function FormModal({
       return;
     }
 
-    if (formData !== null && addFormData !== undefined) {
-      let newData: IPossibleData = {} as IPossibleData;
+    if (formData !== null && getData !== undefined) {
+      let newData = {} as IPossibleData;
       for (let key in formData) {
-        newData[key] = formData[key].value;
+        newData = { ...newData, [key]: formData[key].value };
       }
-      addFormData(newData);
+      getData(newData);
       closeModal();
     }
   };
@@ -74,7 +84,13 @@ function FormModal({
   };
 
   return (
-    <div className="z-50 absolute -top-[80px] right-0 h-screen min-w-[400px] px-6 pb-6 pt-14 bg-gray-100 border-l-2 border-gray-300">
+    <motion.div
+      initial={{ x: "100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "100%" }}
+      transition={{ duration: 0.3 }}
+      className="z-50 absolute -top-[80px] right-0 h-screen min-w-[400px] px-6 pb-6 pt-14 bg-gray-100 border-l-2 border-gray-300"
+    >
       <div
         className="absolute right-4 top-4 cursor-pointer"
         onClick={closeModal}
@@ -113,7 +129,7 @@ function FormModal({
           Add
         </button>
       </form>
-    </div>
+    </motion.div>
   );
 }
 
