@@ -8,7 +8,7 @@ function UserTypeSwitcher({
   setCurrentUser,
 }: UserTypeSwitcherProps) {
   return (
-    <div className="p-3 border border-solid border-black relative flex items-center gap-8 w-[500px]">
+    <div className="p-3 border border-solid border-black relative flex items-center gap-8 w-full max-w-[600px]">
       <div
         className="absolute bg-mainBlue h-full z-[-1] left-0 transition-transform duration-300 ease-in-out"
         style={{
