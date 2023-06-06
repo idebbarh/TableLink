@@ -9,9 +9,10 @@ const startServer = async () => {
   try {
     //connect to db
     await connectToDB();
-    console.log("connected to database");
+    //create tables
+    await createTables();
     //start the express server
-    const server = app.listen(5000, () => console.log("listing on port 5000"));
+    const server = app.listen(4000, () => console.log("listing on port 4000"));
     process.on("SIGINT", () => {
       server.close(() => {
         closeDBConnection();
