@@ -21,20 +21,29 @@ const connectToDB = async () => {
   console.log("Database connection is established");
 };
 
-//conver connection.query from callback to async await function and bind the connection to 'this' of connection.query;
-const query = promisify(connection.query).bind(connection);
+const query = (query: string, options: any[] = []) => {
+  return new Promise((resolve, reject) => {
+    connection.query(query, options, (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+};
 
 //check the connection
 const checkConnectionToDb = async () => {
-  await query({ sql: "select 1" });
+  await query("select 1");
 };
 
 //create tables
 const createTables = async () => {
   Object.keys(QUERIES.CREATE_TABLES).forEach(async (key) => {
-    await query({
-      sql: QUERIES.CREATE_TABLES[key as keyof typeof QUERIES.CREATE_TABLES],
-    });
+    await query(
+      QUERIES.CREATE_TABLES[key as keyof typeof QUERIES.CREATE_TABLES]
+    );
   });
   console.log("tables created succussfully");
 };

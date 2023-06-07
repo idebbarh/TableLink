@@ -4,6 +4,9 @@ import {
   closeDBConnection,
 } from "./config/databaseConfig";
 import app from "./server";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 const startServer = async () => {
   try {
@@ -15,6 +18,7 @@ const startServer = async () => {
     const server = app.listen(4000, () => console.log("listing on port 4000"));
     process.on("SIGINT", () => {
       server.close(() => {
+        console.log("close server");
         closeDBConnection();
         process.exit(0);
       });
