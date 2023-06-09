@@ -1,5 +1,6 @@
 import express from "express";
 import userControllers from "./controllers/userController";
+import { errorHandler } from "./utils/errorHandler";
 
 const app = express();
 
@@ -11,4 +12,6 @@ app.use(express.urlencoded({ extended: false }));
 app.post("/login", userControllers.singin);
 app.post("/register", userControllers.signup);
 
+//error handler
+app.use(errorHandler);
 export default app;

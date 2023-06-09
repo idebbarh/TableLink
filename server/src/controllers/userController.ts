@@ -24,13 +24,13 @@ const singin = async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
     const user = await UserRepository.getUser(email);
     if (!user) {
-      return res.status(401).json("invalid credentials");
+      throw Error("invalid credentials");
     }
 
     const isValidPassword = await compareTwoPasswords(password, user.password);
 
     if (!isValidPassword) {
-      return res.status(401).json("invalid credentials");
+      throw Error("invalid credentials");
     }
 
     const token = createJWT(user.id.toString(), user.email);

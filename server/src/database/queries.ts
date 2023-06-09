@@ -23,7 +23,8 @@ const QUERIES = {
     restaurant_id INT,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
+    UNIQUE (email)
   )
 `,
 
