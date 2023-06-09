@@ -12,7 +12,7 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
       password,
       user_type,
     });
-    const token = createJWT(user.id.toString(), user.email);
+    const token = createJWT(user.id.toString(), user.email, user.user_type);
     return res.status(200).json({ res: token });
   } catch (err) {
     next(err);

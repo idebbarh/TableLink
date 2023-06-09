@@ -3,12 +3,22 @@ import { promisify } from "util";
 import QUERIES from "../database/queries";
 
 //config
+const _host =
+  process.env.DB_HOST !== undefined ? process.env.DB_HOST : "localhost";
+const _user = process.env.DB_USER !== undefined ? process.env.DB_USER : "root";
+const _password =
+  process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : "root";
+const _port =
+  process.env.DB_PORT !== undefined ? parseInt(process.env.DB_PORT) : 3306;
+const _database =
+  process.env.DB_NAME !== undefined ? process.env.DB_NAME : "test";
+
 const connection = mysql.createConnection({
-  host: "localhost",
-  user: "debbarh",
-  password: "debbarh",
-  port: 3306,
-  database: "table_link",
+  host: _host,
+  user: _user,
+  password: _password,
+  port: _port,
+  database: _database,
 });
 
 //connect to database
