@@ -1,3 +1,4 @@
+import { ResultSetHeader } from "mysql2";
 import query from "../config/databaseConfig";
 import { UserModel } from "../models/userModel";
 import { hashPassword } from "../utils/password";
@@ -7,11 +8,11 @@ const createUser = async (
 ): Promise<UserModel> => {
   const { name, email, password, user_type } = user;
   const hashedPassword = await hashPassword(password);
-  await query(
-    "insert into users (name,email,password,user_type,restaurant_id) values (?,?,?,?,?)",
+  const { insertId } = (await query(
+    "insert into users (name,email,password,user_type) values (?,?,?,?)",
     [name, email, hashedPassword, user_type, null]
-  );
-  const createdUser = await getUser(email);
+  )) as ResultSetHeader;
+  const createdUser = await getUserById(insertId);
 
   if (!createdUser) {
     throw Error("somethig weird prevent the from creating the user");
@@ -20,9 +21,9 @@ const createUser = async (
   return createdUser;
 };
 
-const getUser = async (email: string): Promise<UserModel | null> => {
-  const res = (await query("select * from users where email = ?", [
-    email,
+const getUserById = async (id: number): Promise<UserModel | null> => {
+  const res = (await query("select * from users where id = ?", [
+    id,
   ])) as UserModel[];
 
   if (res.length === 0) {
@@ -32,9 +33,27 @@ const getUser = async (email: string): Promise<UserModel | null> => {
   return res[0];
 };
 
+const getUserByQuery = async (
+  queryObj: Partial<UserModel>
+): Promise<UserModel | null> => {
+  let _query = "select * from users where";
+  let queryValues: (string | number)[] = [];
+  Object.entries(queryObj).forEach(([key, value]) => {
+    queryValues.push(value);
+    _query += ` ${key} = ?`;
+  });
+
+  const res = (await query(_query, queryValues)) as UserModel[];
+  if (res.length === 0) {
+    return null;
+  }
+  return res[0];
+};
+
 const UserRepository = {
+  getUserByQuery,
   createUser,
-  getUser,
+  getUserById,
 };
 
 export default UserRepository;

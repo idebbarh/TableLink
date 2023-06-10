@@ -3,26 +3,26 @@ import { Router } from "express";
 const ownerRouter = Router();
 
 //get all employees
-ownerRouter.get();
+/* ownerRouter.get(); */
 //get all menu items
-ownerRouter.get();
+/* ownerRouter.get(); */
 //get all reservation
-ownerRouter.get();
+/* ownerRouter.get(); */
 //get restauration statistiques
-ownerRouter.get();
+/* ownerRouter.get(); */
 //create new employee
-ownerRouter.post();
+/* ownerRouter.post(); */
 //create new menu item
-ownerRouter.post();
+/* ownerRouter.post(); */
 //delete employee
-ownerRouter.delete();
+/* ownerRouter.delete(); */
 //delete menu item
-ownerRouter.delete();
+/* ownerRouter.delete(); */
 //delete reservation
-ownerRouter.delete();
+/* ownerRouter.delete(); */
 //edit employee
-ownerRouter.put();
+/* ownerRouter.put(); */
 //edit menu item
-ownerRouter.put();
+/* ownerRouter.put(); */
 
 export default ownerRouter;

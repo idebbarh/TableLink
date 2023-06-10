@@ -11,7 +11,6 @@ export interface UserModel {
   email: string;
   password: string;
   user_type: USER_TYPE;
-  restaurant_id: number | null;
   createdAt: string;
   updatedAt: string;
 }

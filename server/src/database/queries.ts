@@ -1,18 +1,5 @@
 const QUERIES = {
   CREATE_TABLES: {
-    CREATE_RESTAURANTS_TABLE: `
-  CREATE TABLE IF NOT EXISTS restaurants (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    tele VARCHAR(255),
-    description VARCHAR(255),
-    owner_id INT,
-    tables_number INT NOT NULL,
-    FOREIGN KEY (owner_id) REFERENCES users(id),
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-)
-`,
     CREATE_USERS_TABLE: `
   CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -20,12 +7,23 @@ const QUERIES = {
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     user_type ENUM('restaurant_owner','client','waiter','chef'),
-    restaurant_id INT,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
     UNIQUE (email)
   )
+`,
+    CREATE_RESTAURANTS_TABLE: `
+  CREATE TABLE IF NOT EXISTS restaurants (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    tele VARCHAR(255),
+    description VARCHAR(255),
+    owner_id INT,
+    tables_number INT,
+    FOREIGN KEY (owner_id) REFERENCES users(id),
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)
 `,
 
     CREATE_REVIEWS_TABLE: `
@@ -79,6 +77,8 @@ const QUERIES = {
   CREATE TABLE IF NOT EXISTS waiters (
     user_id INT,
     is_available BOOL, 
+    restaurant_id INT,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
     commands_number INT,
     FOREIGN KEY (user_id) REFERENCES users(id)
 )
@@ -87,6 +87,8 @@ const QUERIES = {
   CREATE TABLE IF NOT EXISTS chefs (
     user_id INT,
     is_available BOOL, 
+    restaurant_id INT,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
     commands_number INT,
     FOREIGN KEY (user_id) REFERENCES users(id)
 )

@@ -1,7 +1,9 @@
 import mysql from "mysql2";
 import { promisify } from "util";
 import QUERIES from "../database/queries";
+import * as dotenv from "dotenv";
 
+dotenv.config();
 //config
 const _host =
   process.env.DB_HOST !== undefined ? process.env.DB_HOST : "localhost";
