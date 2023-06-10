@@ -1,8 +1,4 @@
-import {
-  connectToDB,
-  createTables,
-  closeDBConnection,
-} from "./config/databaseConfig";
+import { createTables } from "./database/mysql";
 import app from "./server";
 import * as dotenv from "dotenv";
 
@@ -10,8 +6,6 @@ dotenv.config();
 
 const startServer = async () => {
   try {
-    //connect to db
-    await connectToDB();
     //create tables
     await createTables();
     //start the express server
@@ -19,7 +13,7 @@ const startServer = async () => {
     process.on("SIGINT", () => {
       server.close(() => {
         console.log("close server");
-        closeDBConnection();
+        /* closeDBConnection(); */
         process.exit(0);
       });
     });

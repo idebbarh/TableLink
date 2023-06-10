@@ -1,5 +1,5 @@
 import { ResultSetHeader } from "mysql2";
-import query from "../config/databaseConfig";
+import { query } from "../database/mysql";
 import { restaurantModel } from "../models/restaurantModel";
 
 const createRestaurant = async (
