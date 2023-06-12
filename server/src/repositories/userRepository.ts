@@ -12,7 +12,7 @@ const createUser = async (
     "insert into users (name,email,password,user_type) values (?,?,?,?)",
     [name, email, hashedPassword, user_type, null]
   )) as ResultSetHeader;
-  const createdUser = await getUserById(insertId);
+  const createdUser = await getById(insertId);
 
   if (!createdUser) {
     throw Error("somethig weird prevent the from creating the user");
@@ -21,7 +21,7 @@ const createUser = async (
   return createdUser;
 };
 
-const getUserById = async (id: number): Promise<UserModel | null> => {
+const getById = async (id: number): Promise<UserModel | null> => {
   const res = (await query("select * from users where id = ?", [
     id,
   ])) as UserModel[];
@@ -33,7 +33,7 @@ const getUserById = async (id: number): Promise<UserModel | null> => {
   return res[0];
 };
 
-const getUserByQuery = async (
+const getByQuery = async (
   queryObj: Partial<UserModel>
 ): Promise<UserModel | null> => {
   let _query = "select * from users where";
@@ -50,9 +50,9 @@ const getUserByQuery = async (
 };
 
 const UserRepository = {
-  getUserByQuery,
+  getByQuery,
   createUser,
-  getUserById,
+  getById,
 };
 
 export default UserRepository;

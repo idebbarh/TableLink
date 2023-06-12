@@ -11,16 +11,14 @@ const createRestaurant = async (
     [name, null, null, owner_id, 0]
   )) as ResultSetHeader;
 
-  const createdRestaurant = await getRestaurantById(insertId);
+  const createdRestaurant = await getById(insertId);
   if (!createdRestaurant) {
     throw Error("somethig weird prevent the from creating the restaurant");
   }
   return createdRestaurant;
 };
 
-const getRestaurantById = async (
-  id: number
-): Promise<RestaurantModel | null> => {
+const getById = async (id: number): Promise<RestaurantModel | null> => {
   const res = (await query("select * from restaurants where id = ?", [
     id,
   ])) as RestaurantModel[];
@@ -30,9 +28,17 @@ const getRestaurantById = async (
   return res[0];
 };
 
+const getAll = async (): Promise<RestaurantModel[]> => {
+  const allRestaurants = (await query(
+    "select * from restaurants"
+  )) as RestaurantModel[];
+  return allRestaurants;
+};
+
 const RestaurantRepository = {
   createRestaurant,
-  getRestaurantById,
+  getById,
+  getAll,
 };
 
 export default RestaurantRepository;

@@ -1,7 +1,20 @@
-import { restaurantModel } from "../models/restaurantModel";
+import { NextFunction, Request, Response } from "express";
+import RestaurantRepository from "../repositories/restaurantRepository";
 
 class RestaurantController {
-  static async updateRestaurant(newRestaurantData: restaurantModel) {}
+  static async getRestaurants(_: Request, res: Response, next: NextFunction) {
+    try {
+      const restaurants = await RestaurantRepository.getAll();
+      res.status(200).json({ res: restaurants });
+    } catch (err) {
+      next(err);
+    }
+  }
+  static async updateRestaurant(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {}
 }
 
 export default RestaurantController;

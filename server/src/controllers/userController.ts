@@ -47,7 +47,7 @@ class UserControllers {
     try {
       const { email, password } = req.body;
 
-      const user = await UserRepository.getUserByQuery({ email });
+      const user = await UserRepository.getByQuery({ email });
       console.log(user);
 
       if (!user) {
@@ -59,7 +59,6 @@ class UserControllers {
         user.password
       );
 
-      console.log(isValidPassword);
       if (!isValidPassword) {
         throw Error("invalid credentials");
       }
