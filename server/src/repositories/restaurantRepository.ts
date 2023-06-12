@@ -7,8 +7,8 @@ const createRestaurant = async (
 ): Promise<restaurantModel> => {
   const { name, owner_id } = restaurant;
   const { insertId } = (await query(
-    "insert into restaurants (name,tele,description,owner_id,tables_number) value(?,?,?,?,?)",
-    [name, null, null, owner_id, null]
+    "insert into restaurants (name,tele,description,owner_id,tables_number) values(?,?,?,?,?)",
+    [name, null, null, owner_id, 0]
   )) as ResultSetHeader;
 
   const createdRestaurant = await getRestaurantById(insertId);

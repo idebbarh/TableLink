@@ -42,7 +42,6 @@ const getUserByQuery = async (
     queryValues.push(value);
     _query += ` ${key} = ?`;
   });
-
   const res = (await query(_query, queryValues)) as UserModel[];
   if (res.length === 0) {
     return null;

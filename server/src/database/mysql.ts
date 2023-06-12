@@ -17,7 +17,6 @@ const queryWithTransaction = (
   queries: Array<{
     query: string;
     params?: any[];
-    dataFromTransaction?: { fromIndex: number; dataPlaceIndex: number };
   }>
 ) => {
   return new Promise((resolve, reject) => {
@@ -26,7 +25,9 @@ const queryWithTransaction = (
       //if an err in the beginTransaction will rollback
       if (err) {
         // the roll back will pass the err to the Promise reject
-        connection.rollback((err) => reject(err));
+
+        console.log("rollback because beginTransaction err");
+        connection.rollback(() => reject(err));
         return;
       }
       //if not err
@@ -38,49 +39,37 @@ const queryWithTransaction = (
       ) => {
         //if the index is equal to the lenght of the queries
         //then we are make all the transactions and we need to commit
-        if (transactionIndex === queries.length) {
+        console.log(transactionIndex);
+        console.log(transactionIndex, queries.length);
+        if (transactionIndex >= queries.length) {
           connection.commit((err) => {
             //if an err in the commit we will rollback
             if (err) {
-              connection.rollback((err) => reject(err));
+              console.log("rollback because commit err");
+              connection.rollback(() => reject(err));
               return;
             }
             //else we pass the result of all the transactions to the resolve
-            resolve(transactionsResults);
           });
+
+          console.log("commit");
+          return resolve(transactionsResults);
         }
 
-        //take the current query
         const currentTransaction = queries[transactionIndex];
-        const currentTransactionParams = currentTransaction.params
-          ? currentTransaction.dataFromTransaction
-            ? [
-                ...currentTransaction.params.slice(
-                  0,
-                  currentTransaction.dataFromTransaction.dataPlaceIndex
-                ),
-                transactionsResults[
-                  currentTransaction.dataFromTransaction.fromIndex
-                ],
-                ...currentTransaction.params.slice(
-                  currentTransaction.dataFromTransaction.fromIndex
-                ),
-              ]
-            : currentTransaction.params
-          : currentTransaction.dataFromTransaction
-          ? transactionsResults[
-              currentTransaction.dataFromTransaction.fromIndex
-            ]
-          : [];
         connection.query(
           currentTransaction.query,
-          [...currentTransactionParams],
+          currentTransaction.params ?? [],
           (err, res) => {
             // if an err in the query we will rollback
             if (err) {
-              connection.rollback((err) => reject(err));
+              console.log("rollback because query err");
+              console.log(currentTransaction.query);
+              connection.rollback(() => reject(err));
               return;
             }
+
+            console.log(currentTransaction.query);
             //else we move to the next transaction
             nextTransaction(transactionIndex + 1, [
               ...transactionsResults,
