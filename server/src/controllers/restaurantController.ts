@@ -1,3 +1,7 @@
 import { restaurantModel } from "../models/restaurantModel";
 
-const updateRestaurantInformation = (newRestaurantData: restaurantModel) => {};
+class RestaurantController {
+  static async updateRestaurant(newRestaurantData: restaurantModel) {}
+}
+
+export default RestaurantController;

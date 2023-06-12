@@ -1,5 +1,5 @@
 import express, { Request } from "express";
-import userControllers from "./controllers/userController";
+import UserController from "./controllers/userController";
 import { errorHandler } from "./utils/errorHandler";
 import ownerRouter from "./routes/OwnerRoutes";
 import globalProtector from "./middlewares/globalProtector";
@@ -20,8 +20,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //router
-app.post("/login", userControllers.singin);
-app.post("/register", userControllers.signup);
+app.post("/login", UserController.singin);
+app.post("/register", UserController.signup);
 //owner routes
 app.use(
   "/api/owner",

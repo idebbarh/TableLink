@@ -7,64 +7,69 @@ import executeMethodsWithTransaction from "../utils/transaction";
 import restaurantRepository from "../repositories/restaurantRepository";
 import { restaurantModel } from "../models/restaurantModel";
 
-const signup = async (req: Request, res: Response, next: NextFunction) => {
-  let user: UserModel;
-  try {
-    const { name, email, password, user_type } = req.body;
-    if (user_type === "restaurant_owner") {
-      console.log(user_type);
-      const userWithRestaurant = (await executeMethodsWithTransaction(
-        [
-          () => UserRepository.createUser({ name, email, password, user_type }),
-          (id: number) =>
-            restaurantRepository.createRestaurant({
-              name,
-              owner_id: id,
-            }),
-        ],
+class UserControllers {
+  static async signup(req: Request, res: Response, next: NextFunction) {
+    let user: UserModel;
+    try {
+      const { name, email, password, user_type } = req.body;
+      if (user_type === "restaurant_owner") {
+        console.log(user_type);
+        const userWithRestaurant = (await executeMethodsWithTransaction(
+          [
+            () =>
+              UserRepository.createUser({ name, email, password, user_type }),
+            (id: number) =>
+              restaurantRepository.createRestaurant({
+                name,
+                owner_id: id,
+              }),
+          ],
 
-        { from: 0, to: 1 }
-      )) as [UserModel, restaurantModel];
-      user = userWithRestaurant[0];
-    } else {
-      user = await UserRepository.createUser({
-        name,
-        email,
+          { from: 0, to: 1 }
+        )) as [UserModel, restaurantModel];
+        user = userWithRestaurant[0];
+      } else {
+        user = await UserRepository.createUser({
+          name,
+          email,
+          password,
+          user_type,
+        });
+      }
+      const token = createJWT(user.id.toString(), user.email, user.user_type);
+      return res.status(200).json({ res: token });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async singin(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, password } = req.body;
+
+      const user = await UserRepository.getUserByQuery({ email });
+      console.log(user);
+
+      if (!user) {
+        throw Error("invalid credentials");
+      }
+
+      const isValidPassword = await compareTwoPasswords(
         password,
-        user_type,
-      });
+        user.password
+      );
+
+      console.log(isValidPassword);
+      if (!isValidPassword) {
+        throw Error("invalid credentials");
+      }
+
+      const token = createJWT(user.id.toString(), user.email, user.user_type);
+      return res.status(200).json({ res: token });
+    } catch (err) {
+      next(err);
     }
-    const token = createJWT(user.id.toString(), user.email, user.user_type);
-    return res.status(200).json({ res: token });
-  } catch (err) {
-    next(err);
   }
-};
+}
 
-const singin = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { email, password } = req.body;
-
-    const user = await UserRepository.getUserByQuery({ email });
-    console.log(user);
-
-    if (!user) {
-      throw Error("invalid credentials");
-    }
-
-    const isValidPassword = await compareTwoPasswords(password, user.password);
-
-    console.log(isValidPassword);
-    if (!isValidPassword) {
-      throw Error("invalid credentials");
-    }
-
-    const token = createJWT(user.id.toString(), user.email, user.user_type);
-    return res.status(200).json({ res: token });
-  } catch (err) {
-    next(err);
-  }
-};
-
-const userControllers = { singin, signup };
-export default userControllers;
+export default UserControllers;
