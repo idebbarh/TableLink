@@ -1,10 +1,10 @@
 import { ResultSetHeader } from "mysql2";
 import { query } from "../database/mysql";
-import { restaurantModel } from "../models/restaurantModel";
+import { RestaurantModel } from "../models/restaurantModel";
 
 const createRestaurant = async (
-  restaurant: Pick<restaurantModel, "name" | "owner_id">
-): Promise<restaurantModel> => {
+  restaurant: Pick<RestaurantModel, "name" | "owner_id">
+): Promise<RestaurantModel> => {
   const { name, owner_id } = restaurant;
   const { insertId } = (await query(
     "insert into restaurants (name,tele,description,owner_id,tables_number) values(?,?,?,?,?)",
@@ -20,10 +20,10 @@ const createRestaurant = async (
 
 const getRestaurantById = async (
   id: number
-): Promise<restaurantModel | null> => {
+): Promise<RestaurantModel | null> => {
   const res = (await query("select * from restaurants where id = ?", [
     id,
-  ])) as restaurantModel[];
+  ])) as RestaurantModel[];
   if (res.length === 0) {
     return null;
   }

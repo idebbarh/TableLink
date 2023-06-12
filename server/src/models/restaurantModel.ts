@@ -1,4 +1,4 @@
-export interface restaurantModel {
+export interface RestaurantModel {
   id: number;
   name: string;
   tele: string | null;

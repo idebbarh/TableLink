@@ -5,7 +5,7 @@ import { compareTwoPasswords } from "../utils/password";
 import { UserModel } from "../models/userModel";
 import executeMethodsWithTransaction from "../utils/transaction";
 import restaurantRepository from "../repositories/restaurantRepository";
-import { restaurantModel } from "../models/restaurantModel";
+import { RestaurantModel } from "../models/restaurantModel";
 
 class UserControllers {
   static async signup(req: Request, res: Response, next: NextFunction) {
@@ -26,7 +26,7 @@ class UserControllers {
           ],
 
           { from: 0, to: 1 }
-        )) as [UserModel, restaurantModel];
+        )) as [UserModel, RestaurantModel];
         user = userWithRestaurant[0];
       } else {
         user = await UserRepository.createUser({
