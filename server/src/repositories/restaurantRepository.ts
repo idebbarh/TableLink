@@ -30,9 +30,9 @@ const getRestaurantById = async (
   return res[0];
 };
 
-const restaurantRepository = {
+const RestaurantRepository = {
   createRestaurant,
   getRestaurantById,
 };
 
-export default restaurantRepository;
+export default RestaurantRepository;

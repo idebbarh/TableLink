@@ -4,7 +4,7 @@ import { createJWT } from "../utils/token";
 import { compareTwoPasswords } from "../utils/password";
 import { UserModel } from "../models/userModel";
 import executeMethodsWithTransaction from "../utils/transaction";
-import restaurantRepository from "../repositories/restaurantRepository";
+import RestaurantRepository from "../repositories/restaurantRepository";
 import { RestaurantModel } from "../models/restaurantModel";
 
 class UserControllers {
@@ -19,7 +19,7 @@ class UserControllers {
             () =>
               UserRepository.createUser({ name, email, password, user_type }),
             (id: number) =>
-              restaurantRepository.createRestaurant({
+              RestaurantRepository.createRestaurant({
                 name,
                 owner_id: id,
               }),
