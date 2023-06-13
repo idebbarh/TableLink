@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { query } from "../database/mysql";
 
 interface CustomRequest extends Request {
   user: {
@@ -8,14 +9,14 @@ interface CustomRequest extends Request {
   };
 }
 
-const userTypeProtector = (
+const userTypeProtector = async (
   req: CustomRequest,
   res: Response,
   next: NextFunction,
-  type: string
+  userTable: "clients" | "owners" | "chefs" | "waiters"
 ) => {
-  const userType = req.user.userType;
-  if (userType !== type) {
+  const user = await query("select * from ?", [userTable]);
+  if (!user) {
     return res.status(401).json({ err: "you are not allowed to do this" });
   }
   next();

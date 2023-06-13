@@ -3,12 +3,12 @@ import { query } from "../database/mysql";
 import { RestaurantModel } from "../models/restaurantModel";
 
 const createRestaurant = async (
-  restaurant: Pick<RestaurantModel, "name" | "owner_id">
+  restaurant: Pick<RestaurantModel, "owner_id">
 ): Promise<RestaurantModel> => {
-  const { name, owner_id } = restaurant;
+  const { owner_id } = restaurant;
   const { insertId } = (await query(
     "insert into restaurants (name,tele,description,owner_id,tables_number) values(?,?,?,?,?)",
-    [name, null, null, owner_id, 0]
+    [null, null, null, owner_id, null]
   )) as ResultSetHeader;
 
   const createdRestaurant = await getById(insertId);
@@ -27,6 +27,21 @@ const getById = async (id: number): Promise<RestaurantModel | null> => {
   }
   return res[0];
 };
+const getByQuery = async (
+  queryObj: Partial<RestaurantModel>
+): Promise<RestaurantModel | null> => {
+  let _query = "select * from restaurants where";
+  let queryValues: (string | number | null)[] = [];
+  Object.entries(queryObj).forEach(([key, value]) => {
+    _query += ` ${key} = ?`;
+    queryValues.push(value);
+  });
+  const res = (await query(_query, queryValues)) as RestaurantModel[];
+  if (res.length === 0) {
+    return null;
+  }
+  return res[0];
+};
 
 const getAll = async (): Promise<RestaurantModel[]> => {
   const allRestaurants = (await query(
@@ -37,6 +52,7 @@ const getAll = async (): Promise<RestaurantModel[]> => {
 
 const RestaurantRepository = {
   createRestaurant,
+  getByQuery,
   getById,
   getAll,
 };

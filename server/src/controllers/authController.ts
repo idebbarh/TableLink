@@ -1,42 +1,40 @@
 import { NextFunction, Request, Response } from "express";
-import UserRepository from "../repositories/userRepository";
 import { createJWT } from "../utils/token";
 import { compareTwoPasswords } from "../utils/password";
-import { UserModel } from "../models/userModel";
 import executeMethodsWithTransaction from "../utils/transaction";
 import RestaurantRepository from "../repositories/restaurantRepository";
 import { RestaurantModel } from "../models/restaurantModel";
+import OwnerRepository from "../repositories/ownerRepository";
+import { OwnerModel } from "../models/ownerModel";
+import ClientRepository from "../repositories/clientRepository";
+import { ClientModel } from "../models/clientModel";
 
-class UserControllers {
+class AuthController {
   static async signup(req: Request, res: Response, next: NextFunction) {
-    let user: UserModel;
+    let user: ClientModel | OwnerModel;
     try {
       const { name, email, password, user_type } = req.body;
       if (user_type === "restaurant_owner") {
-        console.log(user_type);
-        const userWithRestaurant = (await executeMethodsWithTransaction(
+        const [createdUser, _] = (await executeMethodsWithTransaction(
           [
-            () =>
-              UserRepository.createUser({ name, email, password, user_type }),
+            () => OwnerRepository.createOwner({ name, email, password }),
             (id: number) =>
               RestaurantRepository.createRestaurant({
-                name,
                 owner_id: id,
               }),
           ],
-
-          { from: 0, to: 1 }
-        )) as [UserModel, RestaurantModel];
-        user = userWithRestaurant[0];
+          [{ from: 0, to: 1 }]
+        )) as [OwnerModel, RestaurantModel];
+        user = createdUser;
       } else {
-        user = await UserRepository.createUser({
+        const createdUser = await ClientRepository.createClient({
           name,
           email,
           password,
-          user_type,
         });
+        user = createdUser;
       }
-      const token = createJWT(user.id.toString(), user.email, user.user_type);
+      const token = createJWT(user.id.toString(), user.email);
       return res.status(200).json({ res: token });
     } catch (err) {
       next(err);
@@ -47,8 +45,10 @@ class UserControllers {
     try {
       const { email, password } = req.body;
 
-      const user = await UserRepository.getByQuery({ email });
-      console.log(user);
+      const owner = await OwnerRepository.getByQuery({ email });
+      const client = await ClientRepository.getByQuery({ email });
+
+      const user: ClientModel | OwnerModel | null = client || owner || null;
 
       if (!user) {
         throw Error("invalid credentials");
@@ -63,7 +63,7 @@ class UserControllers {
         throw Error("invalid credentials");
       }
 
-      const token = createJWT(user.id.toString(), user.email, user.user_type);
+      const token = createJWT(user.id.toString(), user.email);
       return res.status(200).json({ res: token });
     } catch (err) {
       next(err);
@@ -71,4 +71,4 @@ class UserControllers {
   }
 }
 
-export default UserControllers;
+export default AuthController;

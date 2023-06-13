@@ -1,9 +1,8 @@
 import connection from "../config/databaseConfig";
-import { UserModel } from "../models/userModel";
 
 const executeMethodsWithTransaction = async (
   methods: ((...args: any) => Promise<any>)[],
-  opts?: { from: number; to: number }
+  opts?: { from: number; to: number }[]
 ) => {
   return new Promise((resolve, reject) => {
     connection.beginTransaction((err) => {
@@ -29,8 +28,13 @@ const executeMethodsWithTransaction = async (
         const currentTransaction = methods[transactionIndex];
         try {
           let res: any;
-          if (opts && opts.to === transactionIndex) {
-            res = await currentTransaction(transactionsResults[opts.from].id);
+          if (opts && opts.some((opt) => opt.to === transactionIndex)) {
+            const opt = opts.find((opt) => opt.to === transactionIndex);
+            if (opt) {
+              res = await currentTransaction(transactionsResults[opt.from].id);
+            } else {
+              res = await currentTransaction();
+            }
           } else {
             res = await currentTransaction();
           }

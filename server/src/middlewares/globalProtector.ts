@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { verifyToken } from "../utils/token";
 
 interface CustomRequest extends Request {
-  user?: { userId: string; userEmail: string; userType: string };
+  user?: { userId: string; userEmail: string };
 }
 
 const globalProtector = (
@@ -23,7 +23,6 @@ const globalProtector = (
     const decoded = verifyToken(token) as {
       userId: string;
       userEmail: string;
-      userType: string;
     };
     req.user = decoded;
     next();
