@@ -33,7 +33,7 @@ const getByQuery = async (
   return res[0];
 };
 
-const getById = async (id: number): Promise<OwnerModel | null> => {
+const getById = async (id: number | string): Promise<OwnerModel | null> => {
   const owner = (await query("select * from owners where id = ?", [
     id,
   ])) as OwnerModel[];

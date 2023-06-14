@@ -34,7 +34,7 @@ const getByQuery = async (
   return res[0];
 };
 
-const getById = async (id: number): Promise<OwnerModel | null> => {
+const getById = async (id: number | string): Promise<OwnerModel | null> => {
   const client = (await query("select * from clients where id = ?", [
     id,
   ])) as ClientModel[];

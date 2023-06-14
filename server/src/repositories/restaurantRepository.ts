@@ -18,7 +18,9 @@ const createRestaurant = async (
   return createdRestaurant;
 };
 
-const getById = async (id: number): Promise<RestaurantModel | null> => {
+const getById = async (
+  id: number | string
+): Promise<RestaurantModel | null> => {
   const res = (await query("select * from restaurants where id = ?", [
     id,
   ])) as RestaurantModel[];

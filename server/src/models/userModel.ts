@@ -1,5 +1,5 @@
 export interface UserModel {
-  id: number;
+  id: number | string;
   email: string;
   lives_in: UserType;
   createdAt: string;

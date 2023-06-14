@@ -101,9 +101,8 @@ const QUERIES = {
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    is_available BOOL, 
-    restaurant_id INT,
-    commands_number INT,
+    is_available BOOL NOT NULL DEFAULT 0, 
+    restaurant_id INT NOT NULL,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
     UNIQUE (email)
 )
@@ -114,9 +113,8 @@ const QUERIES = {
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    is_available BOOL, 
-    restaurant_id INT,
-    commands_number INT,
+    is_available BOOL NOT NULL DEFAULT 0, 
+    restaurant_id INT NOT NULL,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
     UNIQUE (email)
 )

@@ -17,7 +17,7 @@ const createUser = async (
   return createdUser;
 };
 
-const getById = async (id: number): Promise<UserModel | null> => {
+const getById = async (id: number | string): Promise<UserModel | null> => {
   const res = (await query("select * from users where id = ?", [
     id,
   ])) as UserModel[];

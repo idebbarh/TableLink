@@ -1,11 +1,12 @@
 import { Router } from "express";
+import OwnerController from "../controllers/ownerController";
 
 const ownerRouter = Router();
 
 //waiters routes
-ownerRouter.get("/employees/waiters");
-ownerRouter.get("/employees/waiters/:id");
-ownerRouter.post("/employees/waiters");
+ownerRouter.get("/employees/waiters", OwnerController.getWaiters);
+ownerRouter.get("/employees/waiters/:id", OwnerController.getWaiter);
+ownerRouter.post("/employees/waiters", OwnerController.createWaiter);
 ownerRouter.delete("/employees/waiters/:id");
 ownerRouter.put("/employees/waiters/:id");
 //chefs routes
