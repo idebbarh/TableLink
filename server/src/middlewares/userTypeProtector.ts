@@ -1,22 +1,20 @@
 import { NextFunction, Request, Response } from "express";
-import { query } from "../database/mysql";
 
 interface CustomRequest extends Request {
   user: {
     userId: string;
     userEmail: string;
-    userType: string;
+    lives_in: string;
   };
 }
-
 const userTypeProtector = async (
   req: CustomRequest,
   res: Response,
   next: NextFunction,
   userTable: "clients" | "owners" | "chefs" | "waiters"
 ) => {
-  const user = await query("select * from ?", [userTable]);
-  if (!user) {
+  const userLivesIn = req.user.lives_in;
+  if (userLivesIn !== userTable) {
     return res.status(401).json({ err: "you are not allowed to do this" });
   }
   next();

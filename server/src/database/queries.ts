@@ -3,14 +3,12 @@ const QUERIES = {
     CREATE_USERS_TABLE: `
   CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    user_type ENUM('restaurant_owner','client','waiter','chef') NOT NULL,
+    lives_in ENUM("owners","clients","waiters","chefs"),
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE (email)
-  )
+)
 `,
     CREATE_OWNERS_TABLE: `
   CREATE TABLE IF NOT EXISTS owners (
@@ -99,7 +97,7 @@ const QUERIES = {
     // is_available : make a switch in the waiter dashboard
     CREATE_WAITERS_TABLE: `
   CREATE TABLE IF NOT EXISTS waiters (
-    id INT,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -112,7 +110,7 @@ const QUERIES = {
 `,
     CREATE_CHEFS_TABLE: `
   CREATE TABLE IF NOT EXISTS chefs (
-    id INT,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -135,8 +133,8 @@ const QUERIES = {
     restaurant_id INT,
     FOREIGN KEY (plate_id) REFERENCES menues(id),
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
-    FOREIGN KEY (waiter_id) REFERENCES waiters(user_id),
-    FOREIGN KEY (chef_id) REFERENCES chefs(user_id)
+    FOREIGN KEY (waiter_id) REFERENCES waiters(id),
+    FOREIGN KEY (chef_id) REFERENCES chefs(id)
 )
 `,
   },

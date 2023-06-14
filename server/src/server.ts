@@ -10,7 +10,7 @@ interface CustomRequest extends Request {
   user: {
     userId: string;
     userEmail: string;
-    userType: string;
+    lives_in: string;
   };
 }
 

@@ -2,6 +2,7 @@ import connection from "../config/databaseConfig";
 import QUERIES from "./queries";
 
 const query = (query: string, options: any[] = []) => {
+  console.log(query);
   return new Promise((resolve, reject) => {
     connection.query(query, options, (err, res) => {
       if (err) {
@@ -85,11 +86,14 @@ const queryWithTransaction = (
 
 //create tables
 const createTables = async () => {
-  Object.keys(QUERIES.CREATE_TABLES).forEach(async (key) => {
-    await query(
-      QUERIES.CREATE_TABLES[key as keyof typeof QUERIES.CREATE_TABLES]
-    );
-  });
+  const init = async () => {
+    Object.keys(QUERIES.CREATE_TABLES).forEach(async (key) => {
+      await query(
+        QUERIES.CREATE_TABLES[key as keyof typeof QUERIES.CREATE_TABLES]
+      );
+    });
+  };
+  await init();
   console.log("tables created succussfully");
 };
 

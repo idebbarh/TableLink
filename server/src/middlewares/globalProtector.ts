@@ -1,10 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyToken } from "../utils/token";
 
-interface CustomRequest extends Request {
-  user?: { userId: string; userEmail: string };
+interface UserInfoFromToken {
+  userId: string;
+  userEmail: string;
+  lives_in: string;
 }
 
+interface CustomRequest extends Request {
+  user?: {
+    userId: string;
+    userEmail: string;
+    lives_in: string;
+  };
+}
 const globalProtector = (
   req: CustomRequest,
   res: Response,
@@ -18,12 +27,8 @@ const globalProtector = (
   if (!_bearer || !token) {
     return res.status(401).json({ err: "invalid token" });
   }
-
   try {
-    const decoded = verifyToken(token) as {
-      userId: string;
-      userEmail: string;
-    };
+    const decoded = verifyToken(token) as UserInfoFromToken;
     req.user = decoded;
     next();
   } catch (err) {
