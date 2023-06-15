@@ -26,7 +26,7 @@ app.post("/register", AuthController.signup);
 //owner routes
 app.use(
   "/api/owner",
-  globalProtector,
+  (req, res, next) => globalProtector(req as CustomRequest, res, next),
   (req, res, next) =>
     userTypeProtector(req as CustomRequest, res, next, "owners"),
   ownerRouter

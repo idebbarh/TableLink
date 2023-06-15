@@ -10,14 +10,14 @@ const createWaiter = async (
     "insert into waiters (name,email,password,restaurant_id) values (?,?,?,?)",
     [name, email, password, restaurant_id]
   )) as ResultSetHeader;
-  const createdWaiter = await getById(insertId);
+  const createdWaiter = await getById(insertId, restaurant_id);
   if (!createdWaiter) {
     throw Error("somethig weard prevent from creating waiter");
   }
   return createdWaiter;
 };
 
-const getAll = async (owner_id: number): Promise<WaiterModel[]> => {
+const getAll = async (owner_id: number | string): Promise<WaiterModel[]> => {
   const res = (await query(
     `select w.* from waiters 
         w join restaurants r on 
@@ -30,20 +30,61 @@ const getAll = async (owner_id: number): Promise<WaiterModel[]> => {
   return res;
 };
 
-const getById = async (id: string | number): Promise<WaiterModel | null> => {
-  const res = (await query("select * from waiters where id = ?", [
-    id,
-  ])) as WaiterModel[];
+const getById = async (
+  id: string | number,
+  restaurant_id: string | number
+): Promise<WaiterModel | null> => {
+  const res = (await query(
+    "select * from waiters where id = ? and restaurant_id = ?",
+    [id, restaurant_id]
+  )) as WaiterModel[];
   if (res.length === 0) {
     return null;
   }
   return res[0];
 };
 
+const deleteById = async (
+  id: string | number,
+  restaurant_id: string | number
+): Promise<void> => {
+  await query("delete from waiters where id = ? and restaurant_id = ?", [
+    id,
+    restaurant_id,
+  ]);
+  const deletedWaiter = await getById(id, restaurant_id);
+  if (deletedWaiter) {
+    throw Error("something weard prevent from deleting the waiter");
+  }
+};
+const updateCols = async (
+  id: number | string,
+  cols: Partial<WaiterModel>,
+  restaurant_id: number | string
+): Promise<WaiterModel> => {
+  let _query = "update waiters set";
+  const queryValues: (string | number)[] = [];
+
+  Object.entries(cols).forEach(([key, value]) => {
+    _query += ` ${key} = ?,`;
+    queryValues.push(value);
+  });
+  _query = _query.slice(0, _query.length - 1);
+  _query += " where restaurant_id = ? and id = ?";
+  queryValues.push(restaurant_id, id);
+  await query(_query, queryValues);
+  const updatedWaiter = await getById(id, restaurant_id);
+  if (!updatedWaiter) {
+    throw Error("this not suppose to happend just to make ts happy");
+  }
+  return updatedWaiter;
+};
 const WaiterRepository = {
   createWaiter,
   getById,
   getAll,
+  deleteById,
+  updateCols,
 };
 
 export default WaiterRepository;

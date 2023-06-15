@@ -8,7 +8,7 @@ interface UserInfoFromToken {
 }
 
 interface CustomRequest extends Request {
-  user?: {
+  user: {
     userId: string;
     userEmail: string;
     lives_in: string;

@@ -2,7 +2,6 @@ import connection from "../config/databaseConfig";
 import QUERIES from "./queries";
 
 const query = (query: string, options: any[] = []) => {
-  console.log(query);
   return new Promise((resolve, reject) => {
     connection.query(query, options, (err, res) => {
       if (err) {
@@ -27,7 +26,6 @@ const queryWithTransaction = (
       if (err) {
         // the roll back will pass the err to the Promise reject
 
-        console.log("rollback because beginTransaction err");
         connection.rollback(() => reject(err));
         return;
       }
@@ -40,8 +38,6 @@ const queryWithTransaction = (
       ) => {
         //if the index is equal to the lenght of the queries
         //then we are make all the transactions and we need to commit
-        console.log(transactionIndex);
-        console.log(transactionIndex, queries.length);
         if (transactionIndex >= queries.length) {
           connection.commit((err) => {
             //if an err in the commit we will rollback
@@ -53,7 +49,6 @@ const queryWithTransaction = (
             //else we pass the result of all the transactions to the resolve
           });
 
-          console.log("commit");
           return resolve(transactionsResults);
         }
 
@@ -64,13 +59,10 @@ const queryWithTransaction = (
           (err, res) => {
             // if an err in the query we will rollback
             if (err) {
-              console.log("rollback because query err");
-              console.log(currentTransaction.query);
               connection.rollback(() => reject(err));
               return;
             }
 
-            console.log(currentTransaction.query);
             //else we move to the next transaction
             nextTransaction(transactionIndex + 1, [
               ...transactionsResults,
@@ -86,14 +78,11 @@ const queryWithTransaction = (
 
 //create tables
 const createTables = async () => {
-  const init = async () => {
-    Object.keys(QUERIES.CREATE_TABLES).forEach(async (key) => {
-      await query(
-        QUERIES.CREATE_TABLES[key as keyof typeof QUERIES.CREATE_TABLES]
-      );
-    });
-  };
-  await init();
+  Object.keys(QUERIES.CREATE_TABLES).forEach(async (key) => {
+    await query(
+      QUERIES.CREATE_TABLES[key as keyof typeof QUERIES.CREATE_TABLES]
+    );
+  });
   console.log("tables created succussfully");
 };
 

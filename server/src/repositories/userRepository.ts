@@ -43,10 +43,29 @@ const getByQuery = async (
   return res[0];
 };
 
+const deleteByEmail = async (email: string): Promise<void> => {
+  await query("delete from users where email = ?", [email]);
+  const deletedUser = await getByQuery({ email });
+  if (deletedUser) {
+    throw Error("something weard prevent from deleting the user");
+  }
+};
+
+const updateEmail = async (
+  emailToFind: string,
+  emailToSet: string
+): Promise<void> => {
+  await query("update users set email = ? where email = ?", [
+    emailToSet,
+    emailToFind,
+  ]);
+};
 const UserRepository = {
   getByQuery,
   getById,
   createUser,
+  deleteByEmail,
+  updateEmail,
 };
 
 export default UserRepository;

@@ -1,14 +1,32 @@
-import { Router } from "express";
+import { Request, Router } from "express";
 import OwnerController from "../controllers/ownerController";
+
+interface CustomRequest extends Request {
+  user: {
+    userId: string;
+    userEmail: string;
+    lives_in: string;
+  };
+}
 
 const ownerRouter = Router();
 
 //waiters routes
-ownerRouter.get("/employees/waiters", OwnerController.getWaiters);
-ownerRouter.get("/employees/waiters/:id", OwnerController.getWaiter);
-ownerRouter.post("/employees/waiters", OwnerController.createWaiter);
-ownerRouter.delete("/employees/waiters/:id");
-ownerRouter.put("/employees/waiters/:id");
+ownerRouter.get("/employees/waiters", (req, res, next) =>
+  OwnerController.getWaiters(req as CustomRequest, res, next)
+);
+ownerRouter.get("/employees/waiters/:id", (req: Request, res, next) =>
+  OwnerController.getWaiter(req as CustomRequest, res, next)
+);
+ownerRouter.post("/employees/waiters", (req, res, next) =>
+  OwnerController.createWaiter(req as CustomRequest, res, next)
+);
+ownerRouter.delete("/employees/waiters/:id", (req: Request, res, next) =>
+  OwnerController.deleteWaiter(req as CustomRequest, res, next)
+);
+ownerRouter.put("/employees/waiters/:id", (req: Request, res, next) =>
+  OwnerController.updateWaiter(req as CustomRequest, res, next)
+);
 //chefs routes
 ownerRouter.get("/employees/chefs");
 ownerRouter.get("/employees/chefs/:id");
