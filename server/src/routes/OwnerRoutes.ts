@@ -46,6 +46,11 @@ ownerRouter.delete("/reservations/:id");
 //statistiques
 ownerRouter.get("/statistiques");
 //restaurant routes
-ownerRouter.put("/restaurant");
+ownerRouter.get("/restaurant", (req, res, next) =>
+  OwnerController.getOwnerRestaurant(req as CustomRequest, res, next)
+);
+ownerRouter.put("/restaurant/:id", (req: Request, res, next) =>
+  OwnerController.updateRestaurant(req as CustomRequest, res, next)
+);
 
 export default ownerRouter;

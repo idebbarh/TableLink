@@ -7,6 +7,7 @@ import executeMethodsWithTransaction from "../utils/transaction";
 import WaiterModel from "../models/waiterModel";
 import { UserModel } from "../models/userModel";
 import { UserType } from "../types/types";
+import RestaurantController from "./restaurantController";
 
 interface CustomRequest extends Request {
   user: {
@@ -138,6 +139,45 @@ class OwnerController {
         () => UserRepository.updateEmail(waiter.email, email),
       ])) as [WaiterModel, void];
       res.status(201).json({ res: updatedWaiter });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async updateRestaurant(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const owner_id = req.user.userId;
+      const id = req.params.id;
+      const { name, tele, description, tables_number } = req.body;
+      const updatedRestaurant = await RestaurantRepository.updateCols(
+        id,
+        { name, tele, description, tables_number },
+        owner_id
+      );
+      res.status(201).json({ res: updatedRestaurant });
+    } catch (err) {
+      next(err);
+    }
+  }
+  //owner have just one restaurant for now
+  static async getOwnerRestaurant(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const owner_id = req.user.userId;
+      const restaurant = await RestaurantRepository.getByQuery({ owner_id });
+      if (!restaurant) {
+        throw Error(
+          "this is not suppose to happend, but this owner does not have restaurant"
+        );
+      }
+      res.status(200).json({ res: restaurant });
     } catch (err) {
       next(err);
     }

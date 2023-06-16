@@ -10,11 +10,6 @@ class RestaurantController {
       next(err);
     }
   }
-  static async updateRestaurant(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {}
 }
 
 export default RestaurantController;

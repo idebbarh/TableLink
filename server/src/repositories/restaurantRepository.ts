@@ -35,9 +35,11 @@ const getByQuery = async (
   let _query = "select * from restaurants where";
   let queryValues: (string | number | null)[] = [];
   Object.entries(queryObj).forEach(([key, value]) => {
-    _query += ` ${key} = ?`;
+    _query += ` ${key} = ? and`;
     queryValues.push(value);
   });
+
+  _query = _query.slice(0, _query.length - 3);
   const res = (await query(_query, queryValues)) as RestaurantModel[];
   if (res.length === 0) {
     return null;
@@ -52,11 +54,34 @@ const getAll = async (): Promise<RestaurantModel[]> => {
   return allRestaurants;
 };
 
+const updateCols = async (
+  id: number | string,
+  cols: Partial<RestaurantModel>,
+  owner_id: number | string
+): Promise<RestaurantModel> => {
+  let _query = "update restaurants set";
+  const queryValues: any[] = [];
+
+  Object.entries(cols).forEach(([key, value]) => {
+    _query += ` ${key} = ?,`;
+    queryValues.push(value);
+  });
+  _query = _query.slice(0, _query.length - 1);
+  _query += " where id = ? and owner_id = ?";
+  queryValues.push(id, owner_id);
+  await query(_query, queryValues);
+  const updatedRestaurant = await getByQuery({ id, owner_id });
+  if (!updatedRestaurant) {
+    throw Error("Restaurant not found");
+  }
+  return updatedRestaurant;
+};
 const RestaurantRepository = {
   createRestaurant,
   getByQuery,
   getById,
   getAll,
+  updateCols,
 };
 
 export default RestaurantRepository;

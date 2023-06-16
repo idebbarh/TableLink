@@ -33,9 +33,11 @@ const getByQuery = async (
   let _query = "select * from users where";
   let queryValues: (string | number | null)[] = [];
   Object.entries(queryObj).forEach(([key, value]) => {
-    _query += ` ${key} = ?`;
+    _query += ` ${key} = ? and`;
     queryValues.push(value);
   });
+
+  _query = _query.slice(0, _query.length - 3);
   const res = (await query(_query, queryValues)) as UserModel[];
   if (res.length === 0) {
     return null;
