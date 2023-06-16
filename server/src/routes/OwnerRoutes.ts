@@ -28,11 +28,21 @@ ownerRouter.put("/employees/waiters/:id", (req: Request, res, next) =>
   OwnerController.updateWaiter(req as CustomRequest, res, next)
 );
 //chefs routes
-ownerRouter.get("/employees/chefs");
-ownerRouter.get("/employees/chefs/:id");
-ownerRouter.post("/employees/chefs");
-ownerRouter.delete("/employees/chefs/:id");
-ownerRouter.put("/employees/chefs/:id");
+ownerRouter.get("/employees/chefs", (req, res, next) =>
+  OwnerController.getChefs(req as CustomRequest, res, next)
+);
+ownerRouter.get("/employees/chefs/:id", (req: Request, res, next) =>
+  OwnerController.getChef(req as CustomRequest, res, next)
+);
+ownerRouter.post("/employees/chefs", (req, res, next) =>
+  OwnerController.createChef(req as CustomRequest, res, next)
+);
+ownerRouter.delete("/employees/chefs/:id", (req: Request, res, next) =>
+  OwnerController.deleteChef(req as CustomRequest, res, next)
+);
+ownerRouter.put("/employees/chefs/:id", (req: Request, res, next) =>
+  OwnerController.updateChef(req as CustomRequest, res, next)
+);
 //menu routes
 ownerRouter.get("/menu");
 ownerRouter.get("/menu/:id");
