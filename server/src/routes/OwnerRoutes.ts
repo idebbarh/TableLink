@@ -61,7 +61,6 @@ ownerRouter.put("/plates/:id", (req: Request, res, next) =>
 );
 //reservations routes
 ownerRouter.get("/reservations");
-ownerRouter.get("/reservations/:id");
 ownerRouter.delete("/reservations/:id");
 //statistiques
 ownerRouter.get("/statistiques");

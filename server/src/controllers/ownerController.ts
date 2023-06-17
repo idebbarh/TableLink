@@ -428,6 +428,7 @@ class OwnerController {
       next(err);
     }
   }
+  static;
 }
 
 export default OwnerController;

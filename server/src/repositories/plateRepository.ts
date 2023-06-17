@@ -69,7 +69,7 @@ const deleteById = async (
   ]);
   const deletedPlate = await getById(id, restaurant_id);
   if (deletedPlate) {
-    throw Error("something weard prevent from deleting the chef");
+    throw Error("something weard prevent from deleting the plate");
   }
 };
 
