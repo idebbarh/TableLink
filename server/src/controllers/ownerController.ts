@@ -11,6 +11,7 @@ import ChefRepository from "../repositories/chefRepository";
 import ChefModel from "../models/chefModel";
 import PlateRepository from "../repositories/plateRepository";
 import ReservationRepository from "../repositories/reservationRepository";
+import StatisticRepository from "../repositories/statisticRepository";
 
 interface CustomRequest extends Request {
   user: {
@@ -469,6 +470,52 @@ class OwnerController {
       }
       await ReservationRepository.deleteById(id, restaurant.id);
       res.status(201).json({ res: reservation });
+    } catch (err) {
+      next(err);
+    }
+  }
+  static async getRestaurantStatistics(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const owner_id = req.user.userId;
+      const restaurant = await RestaurantRepository.getByQuery({ owner_id });
+      if (!restaurant) {
+        throw Error("maybe this owner doesn't have a restaurant");
+      }
+      //day
+      const todaysBookings = await StatisticRepository.getTodaysBookings(
+        restaurant.id
+      );
+      const todaysRevenues = await StatisticRepository.getTodaysRevenues(
+        restaurant.id
+      );
+      //month
+      const thisMonthBookings = await StatisticRepository.getThisMonthBookings(
+        restaurant.id
+      );
+      const thisMonthRevenues = await StatisticRepository.getThisMonthRevenues(
+        restaurant.id
+      );
+      //year
+      const thisYearBookings = await StatisticRepository.getThisYearBookings(
+        restaurant.id
+      );
+      const thisYearRevenues = await StatisticRepository.getThisYearRevenues(
+        restaurant.id
+      );
+      res.status(200).json({
+        res: {
+          todaysBookings: todaysBookings.bookings,
+          todaysRevenues: todaysRevenues.revenues,
+          thisMonthBookings: thisMonthBookings.bookings,
+          thisMonthRevenues: thisMonthRevenues.revenues,
+          thisYearBookings: thisYearBookings.bookings,
+          thisYearRevenues: thisYearRevenues.revenues,
+        },
+      });
     } catch (err) {
       next(err);
     }
