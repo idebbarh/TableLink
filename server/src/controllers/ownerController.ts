@@ -7,9 +7,9 @@ import executeMethodsWithTransaction from "../utils/transaction";
 import WaiterModel from "../models/waiterModel";
 import { UserModel } from "../models/userModel";
 import { UserType } from "../types/types";
-import RestaurantController from "./restaurantController";
 import ChefRepository from "../repositories/chefRepository";
 import ChefModel from "../models/chefModel";
+import PlateRepository from "../repositories/plateRepository";
 
 interface CustomRequest extends Request {
   user: {
@@ -306,6 +306,124 @@ class OwnerController {
         );
       }
       res.status(200).json({ res: restaurant });
+    } catch (err) {
+      next(err);
+    }
+  }
+  static async getOwnerRestaurantPlates(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const owner_id = req.user.userId;
+      const restaurant = await RestaurantRepository.getByQuery({ owner_id });
+      if (!restaurant) {
+        throw Error(
+          "this is not suppose to happend, but this owner does not have restaurant"
+        );
+      }
+      const plates = await PlateRepository.getManyByQuery({
+        restaurant_id: restaurant.id,
+      });
+      res.status(200).json({ res: plates });
+    } catch (err) {
+      next(err);
+    }
+  }
+  static async getOwnerRestaurantPlate(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const owner_id = req.user.userId;
+      const plate_id = req.params.id;
+      const restaurant = await RestaurantRepository.getByQuery({ owner_id });
+      if (!restaurant) {
+        throw Error(
+          "this is not suppose to happend, but this owner does not have restaurant"
+        );
+      }
+      const plate = await PlateRepository.getById(plate_id, restaurant.id);
+      res.status(200).json({ res: plate });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async createPlate(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { name, description, ingredients, price } = req.body;
+      const owner_id = req.user.userId;
+      const restaurant = await RestaurantRepository.getByQuery({ owner_id });
+      if (!restaurant) {
+        throw Error(
+          "this is not suppose to happend, but this owner does not have restaurant"
+        );
+      }
+      const plate = await PlateRepository.createPlate({
+        name,
+        description,
+        ingredients,
+        price,
+        restaurant_id: restaurant.id,
+      });
+      res.status(201).json({ res: plate });
+    } catch (err) {
+      next(err);
+    }
+  }
+  static async deletePlate(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const id = req.params.id;
+      const owner_id = req.user.userId;
+      const restaurant = await RestaurantRepository.getByQuery({ owner_id });
+      if (!restaurant) {
+        throw Error("maybe this owner doesn't have a restaurant");
+      }
+      const plate = await PlateRepository.getById(id, restaurant.id);
+      if (!plate) {
+        throw Error("plate not found");
+      }
+      await PlateRepository.deleteById(id, restaurant.id);
+      res.status(201).json({ res: plate });
+    } catch (err) {
+      next(err);
+    }
+  }
+  static async updatePlate(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const id = req.params.id;
+      const { name, description, ingredients, price } = req.body;
+      const owner_id = req.user.userId;
+      const restaurant = await RestaurantRepository.getByQuery({ owner_id });
+      if (!restaurant) {
+        throw Error("maybe this owner doesn't have a restaurant");
+      }
+      const plate = await PlateRepository.updateCols(
+        id,
+        {
+          name,
+          description,
+          ingredients,
+          price,
+        },
+        restaurant.id
+      );
+      res.status(201).json({ res: plate });
     } catch (err) {
       next(err);
     }

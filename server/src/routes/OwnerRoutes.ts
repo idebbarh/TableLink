@@ -44,11 +44,21 @@ ownerRouter.put("/employees/chefs/:id", (req: Request, res, next) =>
   OwnerController.updateChef(req as CustomRequest, res, next)
 );
 //plates routes
-ownerRouter.get("/plates");
-ownerRouter.get("/plates/:id");
-ownerRouter.post("/plates");
-ownerRouter.delete("/plates/:id");
-ownerRouter.put("/plates/:id");
+ownerRouter.get("/plates", (req, res, next) =>
+  OwnerController.getOwnerRestaurantPlates(req as CustomRequest, res, next)
+);
+ownerRouter.get("/plates/:id", (req: Request, res, next) =>
+  OwnerController.getOwnerRestaurantPlate(req as CustomRequest, res, next)
+);
+ownerRouter.post("/plates", (req, res, next) =>
+  OwnerController.createPlate(req as CustomRequest, res, next)
+);
+ownerRouter.delete("/plates/:id", (req: Request, res, next) =>
+  OwnerController.deletePlate(req as CustomRequest, res, next)
+);
+ownerRouter.put("/plates/:id", (req: Request, res, next) =>
+  OwnerController.updatePlate(req as CustomRequest, res, next)
+);
 //reservations routes
 ownerRouter.get("/reservations");
 ownerRouter.get("/reservations/:id");
