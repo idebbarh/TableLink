@@ -60,8 +60,12 @@ ownerRouter.put("/plates/:id", (req: Request, res, next) =>
   OwnerController.updatePlate(req as CustomRequest, res, next)
 );
 //reservations routes
-ownerRouter.get("/reservations");
-ownerRouter.delete("/reservations/:id");
+ownerRouter.get("/reservations", (req, res, next) =>
+  OwnerController.getReservations(req as CustomRequest, res, next)
+);
+ownerRouter.delete("/reservations/:id", (req: Request, res, next) =>
+  OwnerController.deleteReservation(req as CustomRequest, res, next)
+);
 //statistiques
 ownerRouter.get("/statistiques");
 //restaurant routes

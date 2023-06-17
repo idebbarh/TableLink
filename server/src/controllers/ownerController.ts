@@ -10,6 +10,7 @@ import { UserType } from "../types/types";
 import ChefRepository from "../repositories/chefRepository";
 import ChefModel from "../models/chefModel";
 import PlateRepository from "../repositories/plateRepository";
+import ReservationRepository from "../repositories/reservationRepository";
 
 interface CustomRequest extends Request {
   user: {
@@ -428,7 +429,50 @@ class OwnerController {
       next(err);
     }
   }
-  static;
+  static async getReservations(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const owner_id = req.user.userId;
+      const restaurant = await RestaurantRepository.getByQuery({ owner_id });
+      if (!restaurant) {
+        throw Error("maybe this owner doesn't have a restaurant");
+      }
+      const reservations = await ReservationRepository.getManyByQuery({
+        restaurant_id: restaurant.id,
+      });
+      res.status(200).json({ res: reservations });
+    } catch (err) {
+      next(err);
+    }
+  }
+  static async deleteReservation(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const owner_id = req.user.userId;
+      const id = req.params.id;
+      const restaurant = await RestaurantRepository.getByQuery({ owner_id });
+      if (!restaurant) {
+        throw Error("maybe this owner doesn't have a restaurant");
+      }
+      const reservation = await ReservationRepository.getById(
+        id,
+        restaurant.id
+      );
+      if (!reservation) {
+        throw Error("reservation not found");
+      }
+      await ReservationRepository.deleteById(id, restaurant.id);
+      res.status(201).json({ res: reservation });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default OwnerController;
