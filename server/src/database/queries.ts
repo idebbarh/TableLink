@@ -75,23 +75,13 @@ const QUERIES = {
     CREATE_RESERVATIONS_TABLE: `
   CREATE TABLE IF NOT EXISTS reservations (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    date DATETIME,
+    date DATE,
+    time TIME,
     guests INT,
     client_id INT,
     restaurant_id INT,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
     FOREIGN KEY (client_id) REFERENCES clients(id)
-)
-`,
-
-    CREATE_STATISTICS_TALBE: `
-  CREATE TABLE IF NOT EXISTS statistics (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    date DATETIME,
-    bookings INT NOT NULL,
-    revenues INT NOT NULL,
-    restaurant_id INT,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
 )
 `,
     // is_available : make a switch in the waiter dashboard
@@ -128,6 +118,7 @@ const QUERIES = {
     plate_id INT,
     waiter_id INT,
     chef_id INT,
+    date Date,
     restaurant_id INT,
     FOREIGN KEY (plate_id) REFERENCES plates(id),
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
