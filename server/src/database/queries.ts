@@ -59,8 +59,8 @@ const QUERIES = {
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
 )
 `,
-    CREATE_MENUES_TABLE: `
-  CREATE TABLE IF NOT EXISTS menues (
+    CREATE_plates_TABLE: `
+  CREATE TABLE IF NOT EXISTS plates (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
@@ -129,7 +129,7 @@ const QUERIES = {
     waiter_id INT,
     chef_id INT,
     restaurant_id INT,
-    FOREIGN KEY (plate_id) REFERENCES menues(id),
+    FOREIGN KEY (plate_id) REFERENCES plates(id),
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
     FOREIGN KEY (waiter_id) REFERENCES waiters(id),
     FOREIGN KEY (chef_id) REFERENCES chefs(id)

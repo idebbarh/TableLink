@@ -57,6 +57,7 @@ const deleteById = async (
     throw Error("something weard prevent from deleting the waiter");
   }
 };
+
 const updateCols = async (
   id: number | string,
   cols: Partial<WaiterModel>,

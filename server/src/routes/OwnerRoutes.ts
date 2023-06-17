@@ -43,12 +43,12 @@ ownerRouter.delete("/employees/chefs/:id", (req: Request, res, next) =>
 ownerRouter.put("/employees/chefs/:id", (req: Request, res, next) =>
   OwnerController.updateChef(req as CustomRequest, res, next)
 );
-//menu routes
-ownerRouter.get("/menu");
-ownerRouter.get("/menu/:id");
-ownerRouter.post("/menu");
-ownerRouter.delete("/menu/:id");
-ownerRouter.put("/menu/:id");
+//plates routes
+ownerRouter.get("/plates");
+ownerRouter.get("/plates/:id");
+ownerRouter.post("/plates");
+ownerRouter.delete("/plates/:id");
+ownerRouter.put("/plates/:id");
 //reservations routes
 ownerRouter.get("/reservations");
 ownerRouter.get("/reservations/:id");
