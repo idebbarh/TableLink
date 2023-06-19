@@ -1,6 +1,7 @@
 import { ResultSetHeader } from "mysql2";
 import { query } from "../database/mysql";
 import { RestaurantModel } from "../models/restaurantModel";
+import { convertDateToMysqlFormate } from "../utils/functions";
 
 const createRestaurant = async (
   restaurant: Pick<RestaurantModel, "owner_id">
@@ -76,12 +77,25 @@ const updateCols = async (
   }
   return updatedRestaurant;
 };
+const checkReservationAvailability = async (
+  id: number | string,
+  date: string
+) => {
+  const mysqlDateFormat = convertDateToMysqlFormate(date);
+  const res = await query(
+    "select if(count(*) < (select tables_number from restaurants where id = ?),1,0) as is_available from reservations where restaurant_id = ? and date = ?",
+    [id, id, mysqlDateFormat]
+  );
+  return res;
+};
+
 const RestaurantRepository = {
   createRestaurant,
   getByQuery,
   getById,
   getAll,
   updateCols,
+  checkReservationAvailability,
 };
 
 export default RestaurantRepository;

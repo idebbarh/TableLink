@@ -37,6 +37,28 @@ class ClientController {
       next(err);
     }
   }
+  static async checkAvailability(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { date } = req.body;
+      const restaurant_id = req.params.id;
+      const restaurant = await RestaurantRepository.getById(restaurant_id);
+      if (!restaurant) {
+        throw Error("restaurant not found");
+      }
+      const availability =
+        await RestaurantRepository.checkReservationAvailability(
+          restaurant_id,
+          date
+        );
+      res.status(200).json({ res: availability });
+    } catch (err) {
+      next(err);
+    }
+  }
   //if the client already maked a review will update his review with the new value provided.
   static async makeReview(
     req: CustomRequest,
