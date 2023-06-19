@@ -11,6 +11,8 @@ import { ClientModel } from "../models/clientModel";
 import UserRepository from "../repositories/userRepository";
 import { UserModel } from "../models/userModel";
 import { query } from "../database/mysql";
+import WaiterModel from "../models/waiterModel";
+import ChefModel from "../models/chefModel";
 
 class AuthController {
   static async signup(req: Request, res: Response, next: NextFunction) {
@@ -60,21 +62,33 @@ class AuthController {
       }
 
       const getSpecificUser = async (): Promise<
-        (OwnerModel | ClientModel)[]
+        (OwnerModel | ClientModel | WaiterModel | ChefModel)[]
       > => {
-        let res: (OwnerModel | ClientModel)[];
         switch (user.lives_in) {
           case "owners":
-            res = (await query("select * from owners where email = ?", [
+            const owner = (await query("select * from owners where email = ?", [
               email,
             ])) as OwnerModel[];
-            return res;
+            return owner;
+          case "clients":
+            const client = (await query(
+              "select * from clients where email = ?",
+              [email]
+            )) as ClientModel[];
+            return client;
+
+          case "waiters":
+            const waiter = (await query(
+              "select * from waiters where email = ?",
+              [email]
+            )) as WaiterModel[];
+            return waiter;
 
           default:
-            res = (await query("select * from clients where email = ?", [
+            const chef = (await query("select * from chefs where email = ?", [
               email,
-            ])) as ClientModel[];
-            return res;
+            ])) as ChefModel[];
+            return chef;
         }
       };
       const specificUser = await getSpecificUser();
@@ -91,13 +105,13 @@ class AuthController {
       if (!isValidPassword) {
         throw Error("invalid credentials");
       }
-      console.log(specificUser);
 
       const token = createJWT(
         specificUser[0].id.toString(),
         specificUser[0].email,
         user.lives_in
       );
+
       return res.status(200).json({ res: token });
     } catch (err) {
       next(err);
