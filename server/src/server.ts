@@ -7,6 +7,7 @@ import userTypeProtector from "./middlewares/userTypeProtector";
 import RestaurantController from "./controllers/restaurantController";
 import PlateContoller from "./controllers/plateController";
 import clientRouter from "./routes/clientRoutes";
+import ReviewController from "./controllers/reviewController";
 
 interface CustomRequest extends Request {
   user: {
@@ -46,6 +47,8 @@ app.get("/api/restaurants", RestaurantController.getRestaurants);
 app.get("/api/restaurants/:id", RestaurantController.getRestaurant);
 //plate routes
 app.get("/api/plates/:id", PlateContoller.getAllRestaurantPlates);
+//review routes
+app.get("/api/reviews/:id", ReviewController.getAllRestaurantReviews);
 //error handler
 app.use(errorHandler);
 export default app;

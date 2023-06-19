@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import RestaurantRepository from "../repositories/restaurantRepository";
 import ReservationRepository from "../repositories/reservationRepository";
 import ClientRepository from "../repositories/clientRepository";
+import ReviewRepository from "../repositories/reviewRepository";
 
 interface CustomRequest extends Request {
   user: {
@@ -37,28 +38,28 @@ class ClientController {
     }
   }
   //if the client already maked a review will update his review with the new value provided.
-  /* rating: number; */
-  /* client_id: number; */
-  /* restaurant_id: number; */
   static async makeReview(
     req: CustomRequest,
     res: Response,
     next: NextFunction
   ) {
-        try{
-
-    const { rating } = req.body;
-    const client_id = req.user.userId;
-    const restaurant_id = req.params.id;
-    const restaurant = await RestaurantRepository.getById(restaurant_id);
-    if (!restaurant) {
-      throw Error("restaurant not found");
+    try {
+      const { rating } = req.body;
+      const client_id = req.user.userId;
+      const restaurant_id = req.params.id;
+      const restaurant = await RestaurantRepository.getById(restaurant_id);
+      if (!restaurant) {
+        throw Error("restaurant not found");
+      }
+      const review = await ReviewRepository.createReview({
+        rating,
+        client_id,
+        restaurant_id,
+      });
+      res.status(201).json({ res: review });
+    } catch (err) {
+      next(err);
     }
-        const review = 
-        }catch(err){
-            next(err);
-        }
-
   }
 }
 

@@ -56,9 +56,9 @@ const QUERIES = {
     restaurant_id INT,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_review (client_id, restaurant_id)
+    UNIQUE KEY unique_review (client_id, restaurant_id),
     FOREIGN KEY (client_id) REFERENCES clients(id),
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
 )
 `,
     CREATE_plates_TABLE: `

@@ -18,7 +18,7 @@ clientRouter.post("/reservation/:id", (req: Request, res, next) =>
 );
 //make review
 clientRouter.post("/review/:id", (req: Request, res, next) =>
-  ClientController.makeReservation(req as CustomRequest, res, next)
+  ClientController.makeReview(req as CustomRequest, res, next)
 );
 //make comment
 

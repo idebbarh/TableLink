@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import PlateRepository from "../repositories/plateRepository";
+import ReviewRepository from "../repositories/reviewRepository";
 import RestaurantRepository from "../repositories/restaurantRepository";
-class PlateContoller {
-  static async getAllRestaurantPlates(
+
+class ReviewController {
+  static async getAllRestaurantReviews(
     req: Request,
     res: Response,
     next: NextFunction
@@ -13,12 +14,12 @@ class PlateContoller {
       if (!restaurant) {
         throw Error("restaurant not found");
       }
-      const plates = await PlateRepository.getManyByQuery({ restaurant_id });
-      res.status(200).json({ res: plates });
+      const review = await ReviewRepository.getManyByQuery({ restaurant_id });
+      res.status(200).json({ res: review });
     } catch (err) {
       next(err);
     }
   }
 }
 
-export default PlateContoller;
+export default ReviewController;
