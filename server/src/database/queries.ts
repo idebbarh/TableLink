@@ -42,9 +42,9 @@ const QUERIES = {
     description VARCHAR(255),
     owner_id INT,
     tables_number INT,
-    FOREIGN KEY (owner_id) REFERENCES owners(id),
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES owners(id)
 )
 `,
 
@@ -52,11 +52,13 @@ const QUERIES = {
   CREATE TABLE IF NOT EXISTS reviews (
     id INT AUTO_INCREMENT PRIMARY KEY,
     rating INT NOT NULL,
-    comment VARCHAR(255),
     client_id INT, 
     restaurant_id INT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_review (client_id, restaurant_id)
     FOREIGN KEY (client_id) REFERENCES clients(id),
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
 )
 `,
     CREATE_plates_TABLE: `
@@ -70,6 +72,7 @@ const QUERIES = {
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
+
 )
 `,
     CREATE_RESERVATIONS_TABLE: `
@@ -80,6 +83,8 @@ const QUERIES = {
     guests INT,
     client_id INT,
     restaurant_id INT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
     FOREIGN KEY (client_id) REFERENCES clients(id)
 )
@@ -93,6 +98,8 @@ const QUERIES = {
     password VARCHAR(255) NOT NULL,
     is_available BOOL NOT NULL DEFAULT 0, 
     restaurant_id INT NOT NULL,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
     UNIQUE (email)
 )
@@ -105,6 +112,8 @@ const QUERIES = {
     password VARCHAR(255) NOT NULL,
     is_available BOOL NOT NULL DEFAULT 0, 
     restaurant_id INT NOT NULL,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
     UNIQUE (email)
 )
@@ -120,6 +129,8 @@ const QUERIES = {
     chef_id INT,
     date Date,
     restaurant_id INT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (plate_id) REFERENCES plates(id),
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
     FOREIGN KEY (waiter_id) REFERENCES waiters(id),

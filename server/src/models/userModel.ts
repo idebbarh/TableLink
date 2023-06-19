@@ -1,3 +1,5 @@
+import { UserType } from "../types/types";
+
 export interface UserModel {
   id: number | string;
   email: string;

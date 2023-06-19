@@ -1,5 +1,26 @@
+import { ResultSetHeader } from "mysql2";
 import { query } from "../database/mysql";
 import ReservationModel from "../models/reservationModel";
+
+/* date DATE, */
+/* time TIME, */
+/* guests INT, */
+/* client_id INT, */
+/* restaurant_id INT, */
+const createReservation = async (
+  reservation: Omit<ReservationModel, "id" | "createdAt" | "updatedAt">
+): Promise<ReservationModel> => {
+  const { date, time, guests, client_id, restaurant_id } = reservation;
+  const { insertId } = (await query(
+    "insert into reservations (date,time,guests,client_id,restaurant_id) values (?,?,?,?,?)",
+    [date, time, guests, client_id, restaurant_id]
+  )) as ResultSetHeader;
+  const createdReservation = await getById(insertId, restaurant_id);
+  if (!createdReservation) {
+    throw Error("something weard prevent the creating of reservation");
+  }
+  return createdReservation;
+};
 
 const getById = async (
   id: number | string,
@@ -45,6 +66,7 @@ const deleteById = async (
 };
 
 const ReservationRepository = {
+  createReservation,
   getById,
   getManyByQuery,
   deleteById,
