@@ -9,6 +9,7 @@ import PlateContoller from "./controllers/plateController";
 import clientRouter from "./routes/clientRoutes";
 import ReviewController from "./controllers/reviewController";
 import ReservationController from "./controllers/reservationController";
+import cors from "cors";
 
 interface CustomRequest extends Request {
   user: {
@@ -23,6 +24,7 @@ const app = express();
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
 //auth routes
 app.post("/login", AuthController.singin);

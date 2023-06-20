@@ -46,7 +46,7 @@ class AuthController {
         user = res[0];
       }
       const token = createJWT(user.id.toString(), user.email, lives_in);
-      return res.status(200).json({ res: token });
+      return res.status(200).json({ res: { token, user } });
     } catch (err) {
       next(err);
     }
@@ -112,7 +112,7 @@ class AuthController {
         user.lives_in
       );
 
-      return res.status(200).json({ res: token });
+      return res.status(200).json({ res: { token, user } });
     } catch (err) {
       next(err);
     }

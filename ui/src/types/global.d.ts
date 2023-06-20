@@ -31,3 +31,23 @@ declare interface IReservation {
   time: string;
   people: number;
 }
+
+//------------------------
+declare interface User {
+  id: number | string;
+  email: string;
+  lives_in: "owners" | "clients" | "waiters" | "chefs";
+  createdAt: string;
+  updatedAt: string;
+}
+
+declare type SignupFromData = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+
+declare type SubmitSignupFormData = Omit<SignupFromData, "confirmPassword"> & {
+  lives_in: "clients" | "owners";
+};

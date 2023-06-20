@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
+import { login, selectUser } from "../../../redux/slices/userSlice";
+import { useAppDispatch, useAppSelector } from "../../../redux/store/hooks";
 type SigninFormData = {
-  username: string;
+  email: string;
   password: string;
 };
 
@@ -23,9 +25,11 @@ function SigninForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<SigninFormData>();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectUser);
 
   const signinHandler = (data: SigninFormData) => {
-    console.log(data);
+    dispatch(login(data));
   };
 
   return (
@@ -34,18 +38,16 @@ function SigninForm() {
       onSubmit={handleSubmit(signinHandler)}
     >
       <div className="flex flex-col gap-4">
-        <label htmlFor="username">Username</label>
+        <label htmlFor="email">Email</label>
         <input
-          {...register("username", { required: "Please enter a username" })}
-          placeholder="Enter your username"
+          {...register("email", { required: "Please enter a Email" })}
+          placeholder="Enter your Email"
           type="text"
-          name="username"
-          id="username"
+          name="email"
+          id="email"
           className="outline-none border border-solid border-gray-200 rounded-3xl py-3 px-4 focus:border-mainBlue"
         />
-        {errors.username && (
-          <p className="text-red-500">{errors.username.message}</p>
-        )}
+        {errors.email && <p className="text-red-500">{errors.email.message}</p>}
       </div>
 
       <div className="flex flex-col gap-4">
@@ -72,6 +74,7 @@ function SigninForm() {
       <button
         type="submit"
         className="capitalize w-fit text-white font-semibold text-lg bg-mainBlue px-8 py-4 rounded-3xl mx-auto"
+        disabled={user.status === "loading"}
       >
         sign in
       </button>
