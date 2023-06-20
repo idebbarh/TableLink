@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
-import apiEndpoints from "../../api/apiEndpoints";
+import apiEndpoints, { baseUrl } from "../../api/apiEndpoints";
+import AuthApi from "../../api/auth";
 import {
   addDataToLocalStorage,
   removeDataFromLocalStorage,
@@ -34,12 +35,10 @@ export const login = createAsyncThunk<
   }
 >("user/login", async (data, { rejectWithValue }) => {
   try {
-    const res = await axios.post(
-      "http://localhost:4000" + apiEndpoints.auth.login,
+    const res = (await AuthApi.getUser<{ email: string; password: string }>(
       data
-    );
-
-    return res.data.res;
+    )) as { res: { token: string; user: User } };
+    return res.res;
   } catch (err) {
     const errValue = (err as AxiosError)?.response?.data;
     return rejectWithValue(errValue as { errorMessage: string });
@@ -54,12 +53,10 @@ export const register = createAsyncThunk<
   }
 >("user/register", async (data, { rejectWithValue }) => {
   try {
-    const res = await axios.post(
-      "http://localhost:4000" + apiEndpoints.auth.signup,
-      data
-    );
-
-    return res.data.res;
+    const res = (await AuthApi.createUser<SubmitSignupFormData>(data)) as {
+      res: { token: string; user: User };
+    };
+    return res.res;
   } catch (err) {
     const errValue = (err as AxiosError)?.response?.data;
     return rejectWithValue(errValue as { errorMessage: string });

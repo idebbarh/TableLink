@@ -28,6 +28,7 @@ function SigninForm() {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
 
+  console.log(user);
   const signinHandler = (data: SigninFormData) => {
     dispatch(login(data));
   };

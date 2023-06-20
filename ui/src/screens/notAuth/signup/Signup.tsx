@@ -30,6 +30,7 @@ function SignupForm({ currentUser }: { currentUser: 1 | 0 }) {
   } = useForm<SignupFromData>();
 
   const user = useAppSelector(selectUser);
+  console.log(user);
 
   const dispatch = useAppDispatch();
 

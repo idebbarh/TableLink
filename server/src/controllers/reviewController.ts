@@ -14,8 +14,8 @@ class ReviewController {
       if (!restaurant) {
         throw Error("restaurant not found");
       }
-      const review = await ReviewRepository.getManyByQuery({ restaurant_id });
-      res.status(200).json({ res: review });
+      const reviews = await ReviewRepository.getManyByQuery({ restaurant_id });
+      res.status(200).json({ res: reviews });
     } catch (err) {
       next(err);
     }

@@ -51,3 +51,14 @@ declare type SignupFromData = {
 declare type SubmitSignupFormData = Omit<SignupFromData, "confirmPassword"> & {
   lives_in: "clients" | "owners";
 };
+
+declare interface Restaurant {
+  id: number;
+  description: string | null;
+  name: string | null;
+  owner_id: number;
+  tables_number: number | null;
+  tele: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
