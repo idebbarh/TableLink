@@ -1,6 +1,7 @@
 import { ResultSetHeader } from "mysql2";
 import { query } from "../database/mysql";
 import ReservationModel from "../models/reservationModel";
+import { convertDateToMysqlFormate } from "../utils/functions";
 
 /* date DATE, */
 /* time TIME, */
@@ -13,7 +14,7 @@ const createReservation = async (
   const { date, time, guests, client_id, restaurant_id } = reservation;
   const { insertId } = (await query(
     "insert into reservations (date,time,guests,client_id,restaurant_id) values (?,?,?,?,?)",
-    [date, time, guests, client_id, restaurant_id]
+    [convertDateToMysqlFormate(date), time, guests, client_id, restaurant_id]
   )) as ResultSetHeader;
   const createdReservation = await getById(insertId, restaurant_id);
   if (!createdReservation) {

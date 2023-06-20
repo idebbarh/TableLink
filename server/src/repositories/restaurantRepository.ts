@@ -82,9 +82,13 @@ const checkReservationAvailability = async (
   date: string
 ) => {
   const mysqlDateFormat = convertDateToMysqlFormate(date);
+  /* const res = await query( */
+  /*   "select if(count(*) < (select tables_number from restaurants where id = ?),1,0) as is_available from reservations where restaurant_id = ? and date = ?", */
+  /*   [id, id, mysqlDateFormat] */
+  /* ); */
   const res = await query(
-    "select if(count(*) < (select tables_number from restaurants where id = ?),1,0) as is_available from reservations where restaurant_id = ? and date = ?",
-    [id, id, mysqlDateFormat]
+    "select if(count(rsv.id) < res.tables_number ,1,0) as is_available from restaurants res join reservations rsv on rsv.restaurant_id = res.id where res.id = ? and rsv.date = ? group by res.id",
+    [id, mysqlDateFormat]
   );
   return res;
 };
