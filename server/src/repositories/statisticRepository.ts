@@ -5,6 +5,7 @@ const getTodaysBookings = async (
   restaurant_id: string | number
 ): Promise<{ bookings: number }> => {
   const todayFullDate = getTodaysFullDate();
+  console.log(todayFullDate);
   const bookings = (await query(
     "select count(*) as bookings from reservations where restaurant_id = ? and date = ?",
     [restaurant_id, todayFullDate]

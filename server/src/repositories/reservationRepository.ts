@@ -3,11 +3,6 @@ import { query } from "../database/mysql";
 import ReservationModel from "../models/reservationModel";
 import { convertDateToMysqlFormate } from "../utils/functions";
 
-/* date DATE, */
-/* time TIME, */
-/* guests INT, */
-/* client_id INT, */
-/* restaurant_id INT, */
 const createReservation = async (
   reservation: Omit<ReservationModel, "id" | "createdAt" | "updatedAt">
 ): Promise<ReservationModel> => {

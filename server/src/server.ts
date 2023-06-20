@@ -8,6 +8,7 @@ import RestaurantController from "./controllers/restaurantController";
 import PlateContoller from "./controllers/plateController";
 import clientRouter from "./routes/clientRoutes";
 import ReviewController from "./controllers/reviewController";
+import ReservationController from "./controllers/reservationController";
 
 interface CustomRequest extends Request {
   user: {
@@ -49,6 +50,11 @@ app.get("/api/restaurants/:id", RestaurantController.getRestaurant);
 app.get("/api/plates/:id", PlateContoller.getAllRestaurantPlates);
 //review routes
 app.get("/api/reviews/:id", ReviewController.getAllRestaurantReviews);
+//reservations routes
+app.get(
+  "/api/reservations/:id",
+  ReservationController.getRestaurantTodayReservations
+);
 //error handler
 app.use(errorHandler);
 export default app;
