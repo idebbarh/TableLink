@@ -77,3 +77,14 @@ declare interface Reservation {
   createdAt: string;
   updatedAt: string;
 }
+
+declare interface Plate {
+  id: number;
+  name: string;
+  description: string;
+  ingredients: string;
+  price: number;
+  restaurant_id: number;
+  createdAt: string;
+  updatedAt: string;
+}

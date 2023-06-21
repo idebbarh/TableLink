@@ -9,6 +9,7 @@ import RestaurantApi from "../../../api/restaurant";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../../redux/slices/userSlice";
 import ClientApi from "../../../api/client";
+import PlateApi from "../../../api/plate";
 
 interface BookingsFormData {
   date: string;
@@ -27,10 +28,22 @@ function RestaurantDetails() {
   const user = useSelector(selectUser);
   const { id } = useParams();
   const queryClient = useQueryClient();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const restaurantQuery = useQuery<{ res: Restaurant | null }>({
     queryKey: ["api", "restaurants", id],
     queryFn: () => (id ? RestaurantApi.getRestaurant(id) : { res: null }),
   });
+
+  const menuQuery = useQuery<{ res: Plate[] }>({
+    queryKey: ["api", "plates", id],
+    queryFn: () => (id ? PlateApi.getRestaurantMenu(id) : { res: [] }),
+    onSuccess: (data) => {
+      console.log(data.res);
+    },
+  });
+
   const availabilityMutate = useMutation<
     {
       res: {
@@ -54,6 +67,7 @@ function RestaurantDetails() {
       setErrorMessage(err.errorMessage);
     },
   });
+
   const reservationMutate = useMutation<
     { res: Reservation },
     MyKnownError,
@@ -79,9 +93,6 @@ function RestaurantDetails() {
       setErrorMessage(err.errorMessage);
     },
   });
-
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const checkAvailabilityHandler = (data: BookingsFormData) => {
     if (user.user && user.token) {
@@ -170,23 +181,29 @@ function RestaurantDetails() {
       </div>
       <h2 className="text-[1.6rem] font-bold capitalize text-black">Menu</h2>
       <div className="grid grid-cols-auto-fit gap-4">
-        {/* {restaurant?.restaurantMenu.map((item) => ( */}
-        {/*   <div */}
-        {/*     className="flex flex-col gap-2 items-center bg-white rounded-3xl p-4 border border-solid border-gray-200 shadow-lg" */}
-        {/*     key={item.id} */}
-        {/*   > */}
-        {/*     <h4 className="text-lg font-bold text-dark">{item.name}</h4> */}
-        {/*     <span className="text-sm text-gray-500">{item.description}</span> */}
-        {/*     <ul className="flex flex-wrap gap-2 justify-center items-center"> */}
-        {/*       {item.ingredients.map((ingredient) => ( */}
-        {/*         <li className="text-sm text-gray-500" key={ingredient.id}> */}
-        {/*           {ingredient.name} */}
-        {/*         </li> */}
-        {/*       ))} */}
-        {/*     </ul> */}
-        {/*     <span className="text-2xl text-dark font-bold">{item.price}$</span> */}
-        {/*   </div> */}
-        {/* ))} */}
+        {menuQuery.data && menuQuery.data.res.length ? (
+          menuQuery.data.res.map((item) => (
+            <div
+              className="flex flex-col gap-2 items-center bg-white rounded-3xl p-4 border border-solid border-gray-200 shadow-lg"
+              key={item.id}
+            >
+              <h4 className="text-lg font-bold text-dark">{item.name}</h4>
+              <span className="text-sm text-gray-500">{item.description}</span>
+              <ul className="flex flex-wrap gap-2 justify-center items-center">
+                {item.ingredients.split(",").map((ingredient, index) => (
+                  <li className="text-sm text-gray-500" key={index}>
+                    {ingredient}
+                  </li>
+                ))}
+              </ul>
+              <span className="text-2xl text-dark font-bold">
+                {item.price}$
+              </span>
+            </div>
+          ))
+        ) : (
+          <p>our menu is steal empty</p>
+        )}
       </div>
       <h2 className="text-[1.6rem] font-bold capitalize text-black">
         Book a table
