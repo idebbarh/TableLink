@@ -1,7 +1,10 @@
 import { ResultSetHeader } from "mysql2";
 import { query } from "../database/mysql";
 import { RestaurantModel } from "../models/restaurantModel";
-import { convertDateToMysqlFormate } from "../utils/functions";
+import {
+  convertDateToMysqlFormate,
+  getTodaysFullDate,
+} from "../utils/functions";
 
 const createRestaurant = async (
   restaurant: Pick<RestaurantModel, "owner_id">
@@ -49,8 +52,16 @@ const getByQuery = async (
 };
 
 const getAll = async (): Promise<RestaurantModel[]> => {
+  const todayDate = getTodaysFullDate();
   const allRestaurants = (await query(
-    "select * from restaurants"
+    `select res.*, count(rsv.id) as todaysBookings, round(if(sum(rev.rating)/count(rev.id) is null,0,sum(rev.rating)/count(rev.id)),2) as rating 
+        from restaurants res
+        left join (select * from reservations where date = ?) as rsv
+        on res.id = rsv.restaurant_id 
+        left join reviews rev
+        on res.id = rev.restaurant_id 
+        group by res.id, rsv.restaurant_id, rev.restaurant_id`,
+    [todayDate]
   )) as RestaurantModel[];
   return allRestaurants;
 };
