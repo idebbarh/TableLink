@@ -1,10 +1,7 @@
 import { ResultSetHeader } from "mysql2";
 import { query } from "../database/mysql";
 import { RestaurantModel } from "../models/restaurantModel";
-import {
-  convertDateToMysqlFormate,
-  getTodaysFullDate,
-} from "../utils/functions";
+import { getTodaysFullDate } from "../utils/functions";
 
 const createRestaurant = async (
   restaurant: Pick<RestaurantModel, "owner_id">
@@ -25,9 +22,28 @@ const createRestaurant = async (
 const getById = async (
   id: number | string
 ): Promise<RestaurantModel | null> => {
-  const res = (await query("select * from restaurants where id = ?", [
-    id,
-  ])) as RestaurantModel[];
+  const todayDate = getTodaysFullDate();
+  const res = (await query(
+    `SELECT res.*,
+    COALESCE(todaysBookings, 0) AS todaysBookings,
+    ROUND(IF(numberOfReviews > 0, totalRating / numberOfReviews, 0), 2) AS rating,
+    COALESCE(numberOfReviews, 0) AS numberOfReviews
+    FROM restaurants res
+    LEFT JOIN (
+        SELECT restaurant_id, COUNT(id) AS todaysBookings
+        FROM reservations
+        WHERE date = ?
+        GROUP BY restaurant_id
+    ) AS rsv ON res.id = rsv.restaurant_id
+    LEFT JOIN (
+        SELECT restaurant_id, COUNT(id) AS numberOfReviews, SUM(rating) AS totalRating
+        FROM reviews
+        GROUP BY restaurant_id
+  ) AS rev ON res.id = rev.restaurant_id
+    where id = ?
+    `,
+    [todayDate, id]
+  )) as RestaurantModel[];
   if (res.length === 0) {
     return null;
   }
@@ -54,13 +70,22 @@ const getByQuery = async (
 const getAll = async (): Promise<RestaurantModel[]> => {
   const todayDate = getTodaysFullDate();
   const allRestaurants = (await query(
-    `select res.*, count(rsv.id) as todaysBookings, round(if(sum(rev.rating)/count(rev.id) is null,0,sum(rev.rating)/count(rev.id)),2) as rating 
-        from restaurants res
-        left join (select * from reservations where date = ?) as rsv
-        on res.id = rsv.restaurant_id 
-        left join reviews rev
-        on res.id = rev.restaurant_id 
-        group by res.id, rsv.restaurant_id, rev.restaurant_id`,
+    `SELECT res.*,
+    COALESCE(todaysBookings, 0) AS todaysBookings,
+    ROUND(IF(numberOfReviews > 0, totalRating / numberOfReviews, 0), 2) AS rating,
+    COALESCE(numberOfReviews, 0) AS numberOfReviews
+    FROM restaurants res
+    LEFT JOIN (
+        SELECT restaurant_id, COUNT(id) AS todaysBookings
+        FROM reservations
+        WHERE date = ?
+        GROUP BY restaurant_id
+    ) AS rsv ON res.id = rsv.restaurant_id
+    LEFT JOIN (
+        SELECT restaurant_id, COUNT(id) AS numberOfReviews, SUM(rating) AS totalRating
+        FROM reviews
+        GROUP BY restaurant_id
+    ) AS rev ON res.id = rev.restaurant_id`,
     [todayDate]
   )) as RestaurantModel[];
   return allRestaurants;
@@ -92,16 +117,16 @@ const checkReservationAvailability = async (
   id: number | string,
   date: string
 ) => {
-  const mysqlDateFormat = convertDateToMysqlFormate(date);
-  /* const res = await query( */
-  /*   "select if(count(*) < (select tables_number from restaurants where id = ?),1,0) as is_available from reservations where restaurant_id = ? and date = ?", */
-  /*   [id, id, mysqlDateFormat] */
-  /* ); */
-  const res = await query(
-    "select if(count(rsv.id) < res.tables_number ,1,0) as is_available from restaurants res join reservations rsv on rsv.restaurant_id = res.id where res.id = ? and rsv.date = ? group by res.id",
-    [id, mysqlDateFormat]
-  );
-  return res;
+  const res = (await query(
+    "select if(COALESCE(reservations_count,0) < res.tables_number,1,0) as is_available from restaurants res left join (select count(*) as reservations_count,restaurant_id from reservations where date = ? group by restaurant_id) as rsv on res.id = rsv.restaurant_id where res.id = ?",
+    [date, id]
+  )) as [
+    {
+      is_available: 0 | 1;
+    }
+  ];
+  console.log(res);
+  return res[0];
 };
 
 const RestaurantRepository = {

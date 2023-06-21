@@ -52,6 +52,8 @@ declare type SubmitSignupFormData = Omit<SignupFromData, "confirmPassword"> & {
   lives_in: "clients" | "owners";
 };
 
+declare type MyKnownError = { errorMessage: string };
+
 declare interface Restaurant {
   id: number;
   description: string | null;
@@ -59,6 +61,19 @@ declare interface Restaurant {
   owner_id: number;
   tables_number: number | null;
   tele: string | null;
+  todaysBookings: number;
+  rating: string;
+  numberOfReviews: number;
   updatedAt: string;
   createdAt: string;
+}
+declare interface Reservation {
+  id: number;
+  date: string;
+  time: string;
+  guests: number;
+  client_id: number;
+  restaurant_id: number;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -7,9 +7,4 @@ const getTodaysFullDate = (): string => {
   return fullDate;
 };
 
-const convertDateToMysqlFormate = (date: string): string => {
-  const [month, day, year] = date.split("/");
-  const fullDate = `${year}-${month}-${day}`;
-  return fullDate;
-};
-export { getTodaysFullDate, convertDateToMysqlFormate };
+export { getTodaysFullDate };

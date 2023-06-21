@@ -14,7 +14,6 @@ type InitialState = {
   status: "idle" | "loading" | "failed";
   error: string | null | undefined;
 };
-type MyKnownError = { errorMessage: string };
 
 const initialState: InitialState = {
   token: localStorage.getItem("token")
