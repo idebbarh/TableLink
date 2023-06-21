@@ -36,6 +36,7 @@ declare interface IReservation {
 declare interface User {
   id: number | string;
   email: string;
+  name: string;
   lives_in: "owners" | "clients" | "waiters" | "chefs";
   createdAt: string;
   updatedAt: string;

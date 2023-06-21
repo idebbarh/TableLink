@@ -16,7 +16,8 @@ import ChefModel from "../models/chefModel";
 
 class AuthController {
   static async signup(req: Request, res: Response, next: NextFunction) {
-    let user: ClientModel | OwnerModel;
+    let specificUser: ClientModel | OwnerModel;
+    let user: UserModel;
     try {
       let { name, email, password, lives_in } = req.body;
       password = await hashPassword(password);
@@ -32,7 +33,8 @@ class AuthController {
           ],
           [{ from: 0, to: 1 }]
         )) as [OwnerModel, RestaurantModel, UserModel];
-        user = res[0];
+        specificUser = res[0];
+        user = res[2];
       } else {
         const res = (await executeMethodsWithTransaction([
           () =>
@@ -43,10 +45,17 @@ class AuthController {
             }),
           () => UserRepository.createUser({ email, lives_in }),
         ])) as [ClientModel, UserModel];
-        user = res[0];
+        specificUser = res[0];
+        user = res[1];
       }
-      const token = createJWT(user.id.toString(), user.email, lives_in);
-      return res.status(200).json({ res: { token, user } });
+      const token = createJWT(
+        specificUser.id.toString(),
+        specificUser.email,
+        lives_in
+      );
+      return res
+        .status(200)
+        .json({ res: { token, user: { ...user, name: specificUser.name } } });
     } catch (err) {
       next(err);
     }
@@ -112,7 +121,9 @@ class AuthController {
         user.lives_in
       );
 
-      return res.status(200).json({ res: { token, user } });
+      return res.status(200).json({
+        res: { token, user: { ...user, name: specificUser[0].name } },
+      });
     } catch (err) {
       next(err);
     }

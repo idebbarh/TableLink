@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import StarIcon from "@mui/icons-material/Star";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
+import RateReviewIcon from "@mui/icons-material/RateReview";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import RestaurantApi from "../../../api/restaurant";
@@ -10,6 +11,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../../../redux/slices/userSlice";
 import ClientApi from "../../../api/client";
 import PlateApi from "../../../api/plate";
+import ReviewModel from "./ReviewModel";
 
 interface BookingsFormData {
   date: string;
@@ -30,6 +32,8 @@ function RestaurantDetails() {
   const queryClient = useQueryClient();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isModelReviewModelOpen, setIsReviewModelOpen] =
+    useState<boolean>(false);
 
   const restaurantQuery = useQuery<{ res: Restaurant | null }>({
     queryKey: ["api", "restaurants", id],
@@ -84,7 +88,7 @@ function RestaurantDetails() {
       setValue("date", "");
       setValue("time", "");
       setValue("guests", "");
-      setSuccessMessage("thank you for choosing us");
+      setSuccessMessage(`thank ${user.user?.name} you for choosing us`);
       availabilityMutate.reset();
       queryClient.invalidateQueries(["api", "restaurants", id]);
       console.log(data);
@@ -147,9 +151,22 @@ function RestaurantDetails() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-[2.4rem] font-bold capitalize text-black">
-        {restaurantQuery.data.res.name}
-      </h1>
+      {isModelReviewModelOpen && (
+        <ReviewModel closeModel={() => setIsReviewModelOpen(false)} />
+      )}
+
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-[2.4rem] font-bold capitalize text-black">
+          {restaurantQuery.data.res.name}
+        </h1>
+        <button
+          className="flex items-center justify-center gap-2 border border-gray-300 text-gray-600 text-sm rounded-3xl py-1 px-4 capitalize hover:bg-gray-100 transition duration-150 ease-in-out"
+          onClick={() => setIsReviewModelOpen(true)}
+        >
+          <RateReviewIcon />
+          <span>review now</span>
+        </button>
+      </div>
       <div className="flex items-center">
         {new Array(5).fill(0).map((_, i) => (
           <span className="text-mainBlue" key={i}>

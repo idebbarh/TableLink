@@ -5,6 +5,7 @@ module.exports = {
     extend: {
       colors: {
         mainBlue: "#213fff",
+        blackOverlay: "rgba(0, 0, 0, 0.5)",
       },
       boxShadow: {
         formShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px;",
