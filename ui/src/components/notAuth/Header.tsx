@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import useWindowWidth from "../../hooks/useWindowWidth";
+import { logout, selectUser } from "../../redux/slices/userSlice";
+import { useAppDispatch } from "../../redux/store/hooks";
 
 function Header() {
   const { pathname } = useLocation();
@@ -21,6 +24,9 @@ function Header() {
     left: number;
     width: number;
   } | null>(null);
+
+  const user = useSelector(selectUser);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     let info: typeof activeLinkInfo = null;
@@ -61,7 +67,7 @@ function Header() {
         break;
     }
     setActiveLinkInfo(() => info);
-  }, [pathname, windowWidth]);
+  }, [pathname, windowWidth, user]);
 
   return (
     <header className="relative h-[80px] px-20 flex items-center justify-between gap-4">
@@ -97,22 +103,35 @@ function Header() {
             </Link>
           </li>
 
-          <li ref={signinActiveLinkRef}>
-            <Link
-              to="/signin"
-              className="text-[#343434] text-lg capitalize font-semibold"
+          {!user.user && (
+            <li ref={signinActiveLinkRef}>
+              <Link
+                to="/signin"
+                className="text-[#343434] text-lg capitalize font-semibold"
+              >
+                sign in
+              </Link>
+            </li>
+          )}
+          {!user.user && (
+            <li ref={signupActiveLinkRef}>
+              <Link
+                to="/signup"
+                className="text-[#343434] text-lg capitalize font-semibold"
+              >
+                sign up
+              </Link>
+            </li>
+          )}
+
+          {user.user && (
+            <button
+              className="bg-mainBlue text-white px-4 py-2 rounded-md"
+              onClick={() => dispatch(logout())}
             >
-              sign in
-            </Link>
-          </li>
-          <li ref={signupActiveLinkRef}>
-            <Link
-              to="/signup"
-              className="text-[#343434] text-lg capitalize font-semibold"
-            >
-              sign up
-            </Link>
-          </li>
+              Sign Out
+            </button>
+          )}
         </ul>
       </nav>
     </header>

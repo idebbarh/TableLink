@@ -28,7 +28,6 @@ function SigninForm() {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
 
-  console.log(user);
   const signinHandler = (data: SigninFormData) => {
     dispatch(login(data));
   };
@@ -72,6 +71,7 @@ function SigninForm() {
           </p>
         )}
       </div>
+      {user.error && <p className="text-red-500">{user.error}</p>}
       <button
         type="submit"
         className="capitalize w-fit text-white font-semibold text-lg bg-mainBlue px-8 py-4 rounded-3xl mx-auto"

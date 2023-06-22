@@ -120,6 +120,8 @@ function SignupForm({ currentUser }: { currentUser: 1 | 0 }) {
           </p>
         )}
       </div>
+      {user.error && <p className="text-red-500">{user.error}</p>}
+
       <button
         type="submit"
         className="capitalize w-fit text-white font-semibold text-lg bg-mainBlue px-8 py-4 rounded-3xl mx-auto"

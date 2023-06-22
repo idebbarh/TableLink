@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { resetError, selectUser } from "./redux/slices/userSlice";
+import { useAppDispatch } from "./redux/store/hooks";
 import Dashboard from "./screens/auth/dashboard/Dashboard";
 import Explore from "./screens/notAuth/explore/Explore";
 import Home from "./screens/notAuth/home/Home";
@@ -18,16 +21,61 @@ interface RestaurantModel {
   updatedAt: string;
 }
 function App() {
+  const user = useSelector(selectUser);
+  const path = useLocation();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(resetError());
+  }, [path.pathname]);
+
   return (
     <div className="App">
       <Routes>
         <Route element={<NotAuth />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/explore/*" element={<Explore />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/signin" element={<Signin />} />
+          <Route
+            path="/"
+            element={
+              !user.user || user.user.lives_in === "clients" ? (
+                <Home />
+              ) : (
+                <Navigate to="/dashboard" replace={true} />
+              )
+            }
+          />
+          <Route
+            path="/explore/*"
+            element={
+              !user.user || user.user.lives_in === "clients" ? (
+                <Explore />
+              ) : (
+                <Navigate to="/dashboard" replace={true} />
+              )
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              !user.user ? <Signup /> : <Navigate to={"/"} replace={true} />
+            }
+          />
+          <Route
+            path="/signin"
+            element={
+              !user.user ? <Signin /> : <Navigate to={"/"} replace={true} />
+            }
+          />
         </Route>
-        <Route path="/dashboard/*" element={<Dashboard />} />
+        <Route
+          path="/dashboard/*"
+          element={
+            user.user && user.user.lives_in === "owners" ? (
+              <Dashboard />
+            ) : (
+              <Navigate to={"/"} replace={true} />
+            )
+          }
+        />
       </Routes>
     </div>
   );

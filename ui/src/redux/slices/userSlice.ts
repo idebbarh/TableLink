@@ -68,6 +68,11 @@ const userSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.user = null;
+      state.token = null;
+      removeDataFromLocalStorage(["user", "token"]);
+    },
+    resetError: (state) => {
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -117,14 +122,11 @@ const userSlice = createSlice({
         } else {
           state.error = action.error.message;
         }
-      })
-      .addCase(logout, () => {
-        removeDataFromLocalStorage(["user", "token"]);
       });
   },
 });
 
 export const selectUser = (state: RootState) => state.user;
-export const { logout } = userSlice.actions;
+export const { logout, resetError } = userSlice.actions;
 
 export default userSlice.reducer;

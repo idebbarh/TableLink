@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import UserTypeSwitcher from "../../../components/notAuth/UserTypeSwitcher";
+import { selectUser } from "../../../redux/slices/userSlice";
 
 const heroData = {
   0: {
@@ -15,19 +17,20 @@ const heroData = {
 
 function Hero() {
   const [currentUser, setCurrentUser] = useState<1 | 0>(0);
+  const user = useSelector(selectUser);
 
   return (
     <div className="px-20 py-10">
-      <UserTypeSwitcher
-        currentUser={currentUser}
-        setCurrentUser={setCurrentUser}
-      />
+      {!user.user && (
+        <UserTypeSwitcher
+          currentUser={currentUser}
+          setCurrentUser={setCurrentUser}
+        />
+      )}
       <h1 className="mt-10 text-[4rem] font-bold max-w-[600px]">
         {heroData[currentUser].title}
       </h1>
-      <p className="text-xl my-10">
-        {heroData[currentUser].shortDescription}
-      </p>
+      <p className="text-xl my-10">{heroData[currentUser].shortDescription}</p>
       {currentUser === 0 ? (
         <Link
           to="/explore"

@@ -88,7 +88,7 @@ function RestaurantDetails() {
       setValue("date", "");
       setValue("time", "");
       setValue("guests", "");
-      setSuccessMessage(`thank ${user.user?.name} you for choosing us`);
+      setSuccessMessage(`thank you ${user.user?.name} for choosing us`);
       availabilityMutate.reset();
       queryClient.invalidateQueries(["api", "restaurants", id]);
       console.log(data);
