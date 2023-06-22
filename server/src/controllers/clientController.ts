@@ -83,6 +83,27 @@ class ClientController {
       next(err);
     }
   }
+  static async getClientReviewToRestaurant(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const client_id = req.user.userId;
+      const restaurant_id = req.params.id;
+      const restaurant = await RestaurantRepository.getById(restaurant_id);
+      if (!restaurant) {
+        throw Error("restaurant not found");
+      }
+      const review = await ReviewRepository.getByQuery({
+        client_id,
+        restaurant_id,
+      });
+      res.status(200).json({ res: review });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default ClientController;

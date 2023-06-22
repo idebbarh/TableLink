@@ -25,14 +25,14 @@ const globalProtector = (
   }
   const [_bearer, token] = bearer.split(" ");
   if (!_bearer || !token) {
-    return res.status(401).json({ err: "invalid token" });
+    return res.status(401).json({ errorMessage: "invalid token" });
   }
   try {
     const decoded = verifyToken(token) as UserInfoFromToken;
     req.user = decoded;
     next();
   } catch (err) {
-    return res.status(401).json({ err: "invalid token" });
+    return res.status(401).json({ errorMessage: "invalid token" });
   }
 };
 

@@ -15,7 +15,9 @@ const userTypeProtector = async (
 ) => {
   const userLivesIn = req.user.lives_in;
   if (userLivesIn !== userTable) {
-    return res.status(401).json({ err: "you are not allowed to do this" });
+    return res
+      .status(401)
+      .json({ errorMessage: "you are not allowed to do this" });
   }
   next();
 };

@@ -24,6 +24,10 @@ clientRouter.post("/reservation/availability/:id", (req: Request, res, next) =>
 clientRouter.post("/review/:id", (req: Request, res, next) =>
   ClientController.makeReview(req as CustomRequest, res, next)
 );
+//get review
+clientRouter.get("/review/:id", (req: Request, res, next) => {
+  ClientController.getClientReviewToRestaurant(req as CustomRequest, res, next);
+});
 //make comment
 
 export default clientRouter;

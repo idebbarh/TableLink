@@ -89,3 +89,11 @@ declare interface Plate {
   createdAt: string;
   updatedAt: string;
 }
+declare interface Review {
+  id: number;
+  rating: number;
+  client_id: number;
+  restaurant_id: number;
+  createdAt: string;
+  updatedAt: string;
+}

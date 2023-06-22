@@ -43,6 +43,7 @@ const apiEndpoints = {
     makeReservation: "/api/client/reservation/{{id}}",
     checkAvailability: "/api/client/reservation/availability/{{id}}",
     makeReview: "/api/client/review/{{id}}",
+    getRate: "/api/client/review/{{id}}",
   },
   restaurants: {
     getAllRestaurants: "/api/restaurants",

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import StarIcon from "@mui/icons-material/Star";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
@@ -151,9 +151,18 @@ function RestaurantDetails() {
 
   return (
     <div className="flex flex-col gap-4">
-      {isModelReviewModelOpen && (
-        <ReviewModel closeModel={() => setIsReviewModelOpen(false)} />
-      )}
+      {isModelReviewModelOpen ? (
+        user.user && user.token ? (
+          <ReviewModel
+            closeModel={() => setIsReviewModelOpen(false)}
+            restaurantName={restaurantQuery.data.res.name}
+            userName={user.user.name}
+            token={user.token}
+          />
+        ) : (
+          <Navigate to={"/signin"} />
+        )
+      ) : undefined}
 
       <div className="flex items-center justify-between gap-2">
         <h1 className="text-[2.4rem] font-bold capitalize text-black">
