@@ -34,7 +34,8 @@ const getById = async (
 const getManyByQuery = async (
   queryObj: Partial<ReservationModel>
 ): Promise<ReservationModel[]> => {
-  let _query = "select * from reservations where";
+  let _query =
+    "select res.*,cl.name as client_name from reservations res join clients cl on res.client_id = cl.id where";
   const queryValues: (string | number)[] = [];
 
   Object.entries(queryObj).forEach(([key, value]) => {

@@ -4,10 +4,12 @@ import SideBar from "../../../components/auth/SideBar";
 import { logout, selectUser } from "../../../redux/slices/userSlice";
 import { useAppDispatch, useAppSelector } from "../../../redux/store/hooks";
 import Home from "./Home";
-import Employees from "./restaurantOwner/Employees";
+import Chefs from "./restaurantOwner/Chefs";
 import MainMenu from "./restaurantOwner/MainMenu";
 import Reservations from "./restaurantOwner/Reservations";
 import Statistics from "./restaurantOwner/Statistics";
+import Waiters from "./restaurantOwner/Waiters";
+import Settings from "./Settings";
 
 const sideBarOptions: SideBarOptionType[] = [
   {
@@ -15,8 +17,13 @@ const sideBarOptions: SideBarOptionType[] = [
     path: "",
   },
   {
-    title: "Employees",
-    path: "employees",
+    title: "Waiters",
+    path: "waiters",
+  },
+
+  {
+    title: "Chefs",
+    path: "chefs",
   },
   {
     title: "Reservations",
@@ -39,7 +46,7 @@ const sideBarOptions: SideBarOptionType[] = [
 function Dashboard() {
   const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
-  if (!user.user) {
+  if (!user.user || !user.token) {
     return <div>not auth</div>;
   }
   return (
@@ -57,11 +64,18 @@ function Dashboard() {
         <main className="p-8 relative">
           <Routes>
             <Route path="" element={<Home userName={user.user.name} />} />
-            <Route path="employees" element={<Employees />} />
-            <Route path="reservations" element={<Reservations />} />
-            <Route path="menu" element={<MainMenu />} />
-            <Route path="statistics" element={<Statistics />} />
-            {/* <Route path="settings" element={<Settings />} /> */}
+            <Route path="waiters" element={<Waiters token={user.token} />} />
+            <Route path="chefs" element={<Chefs token={user.token} />} />
+            <Route
+              path="reservations"
+              element={<Reservations token={user.token} />}
+            />
+            <Route path="menu" element={<MainMenu token={user.token} />} />
+            <Route
+              path="statistics"
+              element={<Statistics token={user.token} />}
+            />
+            <Route path="settings" element={<Settings token={user.token} />} />
           </Routes>
         </main>
       </div>

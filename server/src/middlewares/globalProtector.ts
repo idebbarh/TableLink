@@ -21,7 +21,7 @@ const globalProtector = (
 ) => {
   const bearer: string | undefined = req.headers.authorization;
   if (!bearer) {
-    return res.status(401).json({ err: "not auth" });
+    return res.status(401).json({ errorMessage: "not auth" });
   }
   const [_bearer, token] = bearer.split(" ");
   if (!_bearer || !token) {

@@ -1,40 +1,31 @@
-import { removeListener } from "process";
-import { useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import OwnerApi from "../../../../api/owner";
 
-function Reservations() {
-  const [reservations, setReservations] = useState<IReservation[]>([
-    {
-      id: 1,
-      name: "John Doe",
-      date: "2021-10-10",
-      time: "12:00",
-      people: 2,
+function Reservations({ token }: { token: string }) {
+  const queryClient = useQueryClient();
+  const reservationsQuery = useQuery<{ res: Reservation[] }>({
+    queryKey: ["api", "owner", "reservations"],
+    queryFn: () => OwnerApi.getAllReservations(token),
+  });
+
+  const reservationMutation = useMutation<
+    { res: Reservation },
+    MyKnownError,
+    number | string
+  >({
+    mutationKey: ["api", "owner", "reservations", "id"],
+    mutationFn: (id) => OwnerApi.deleteReservation(id, token),
+    onSuccess: (data) => {
+      console.log(data);
+      queryClient.invalidateQueries(["api", "owner", "reservations"]);
     },
-    {
-      id: 2,
-      name: "Jane Doe",
-      date: "2021-10-10",
-      time: "12:00",
-      people: 2,
+    onError: (error) => {
+      console.log(error.errorMessage);
     },
-    {
-      id: 3,
-      name: "John Smith",
-      date: "2021-10-10",
-      time: "12:00",
-      people: 2,
-    },
-    {
-      id: 4,
-      name: "Jane Smith",
-      date: "2021-10-10",
-      time: "12:00",
-      people: 2,
-    },
-  ]);
-  const removeReservation = (id: number) => {
-    setReservations((prev) => prev.filter((item) => item.id !== id));
+  });
+  const removeReservation = (id: number | string) => {
+    reservationMutation.mutate(id);
   };
   return (
     <>
@@ -46,42 +37,59 @@ function Reservations() {
             <th className="border border-solid border-black p-2">name</th>
             <th className="border border-solid border-black p-2">date</th>
             <th className="border border-solid border-black p-2">time</th>
-            <th className="border border-solid border-black p-2">people</th>
+            <th className="border border-solid border-black p-2">guests</th>
             <th className="border border-solid border-black p-2">actions</th>
           </tr>
         </thead>
         <tbody>
-          {reservations.map((reservation) => (
-            <tr key={reservation.id}>
-              <td className="border border-solid border-black p-2">
-                {reservation.id}
-              </td>
-              <td className="border border-solid border-black p-2">
-                {reservation.name}
-              </td>
-              <td className="border border-solid border-black p-2">
-                {reservation.date}
-              </td>
-              <td className="border border-solid border-black p-2">
-                {reservation.time}
-              </td>
-              <td className="border border-solid border-black p-2">
-                {reservation.people}
-              </td>
-              <td className="border border-solid border-black p-2">
-                <div className="flex gap-2 items-center justify-center">
-                  <button
-                    className="text-red-500"
-                    onClick={() => removeReservation(reservation.id)}
-                  >
-                    <DeleteIcon />
-                  </button>
-                </div>
+          {reservationsQuery.isLoading ? (
+            <tr>
+              <td colSpan={3}>Loading...</td>
+            </tr>
+          ) : reservationsQuery.data && reservationsQuery.data.res.length ? (
+            reservationsQuery.data.res.map((reservation) => (
+              <tr key={reservation.id}>
+                <td className="border border-solid border-black p-2">
+                  {reservation.id}
+                </td>
+                <td className="border border-solid border-black p-2">
+                  {reservation.client_name}
+                </td>
+                <td className="border border-solid border-black p-2">
+                  {reservation.date.split("T")[0]}
+                </td>
+                <td className="border border-solid border-black p-2">
+                  {reservation.time}
+                </td>
+                <td className="border border-solid border-black p-2">
+                  {reservation.guests}
+                </td>
+                <td className="border border-solid border-black p-2">
+                  <div className="flex gap-2 items-center justify-center">
+                    <button
+                      className="text-red-500"
+                      onClick={() => removeReservation(reservation.id)}
+                    >
+                      <DeleteIcon />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={3} className="p-2 text-red-500">
+                No waiters found
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
+      {reservationMutation.isError && (
+        <p className="mt-4 font-bold text-lg text-red-500">
+          {reservationMutation.error.errorMessage}
+        </p>
+      )}
     </>
   );
 }

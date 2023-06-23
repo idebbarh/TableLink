@@ -3,79 +3,108 @@ import { AnimatePresence } from "framer-motion";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FormModal from "../../../../components/auth/FormModal";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import OwnerApi from "../../../../api/owner";
 
-function MainMenu() {
+function MainMenu({ token }: { token: string }) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [menuItemToEdit, setMenuItemToEdit] = useState<IMenuItem | null>(null);
-  const [menu, setMenu] = useState<IMenuItem[]>([
-    {
-      id: 1,
-      name: "Burger",
-      price: "100",
-      description: "A burger",
-      ingredients: [
-        {
-          id: 1,
-          name: "Cheese",
-        },
-        {
-          id: 2,
-          name: "Tomato",
-        },
-        {
-          id: 3,
-          name: "Onion",
-        },
-        {
-          id: 4,
-          name: "Capsicum",
-        },
-      ],
+  const [menuItemToEdit, setMenuItemToEdit] = useState<Pick<
+    Plate,
+    "id" | "name" | "description" | "ingredients" | "price"
+  > | null>(null);
+  const queryClient = useQueryClient();
+
+  const platesQuery = useQuery<{ res: Plate[] }, MyKnownError>({
+    queryKey: ["api", "owner", "plates"],
+    queryFn: () => OwnerApi.getAllPlates(token),
+    onSuccess: (data) => {
+      console.log(data);
     },
-  ]);
+    onError: (err) => {
+      console.log(err.errorMessage);
+    },
+  });
 
-  const makeNewIngredients = (ingredients: string) => {
-    return ingredients.split(",").map((ing, index) => {
-      return {
-        id: index + 1,
-        name: ing.trim(),
-      };
-    });
-  };
-  const addNewMenuItem = (menuItem: IMenuItem) => {
-    const id = menu.length + 1;
-    if (typeof menuItem.ingredients === "string") {
-      menuItem.ingredients = makeNewIngredients(menuItem.ingredients);
+  const plateMutate = useMutation<
+    { res: Plate },
+    MyKnownError,
+    Pick<Plate, "name" | "description" | "ingredients" | "price">
+  >({
+    mutationKey: ["api", "owner", "plates"],
+    mutationFn: (data) => OwnerApi.createPlate(token, data),
+    onSuccess: (data) => {
+      console.log(data);
+      closeModal();
+      queryClient.invalidateQueries(["api", "owner", "plates"]);
+    },
+    onError: (err) => {
+      console.log(err);
+    },
+  });
+  const deletePlateMutate = useMutation<
+    { res: Plate },
+    MyKnownError,
+    string | number
+  >({
+    mutationKey: ["api", "owner", "plates", "id"],
+    mutationFn: (id) => OwnerApi.deletePlate(token, id),
+    onSuccess: (data) => {
+      console.log(data);
+      closeModal();
+      queryClient.invalidateQueries(["api", "owner", "plates"]);
+    },
+    onError: (err) => {
+      console.log(err);
+    },
+  });
+
+  const updatePlateMutate = useMutation<
+    { res: Plate },
+    MyKnownError,
+    {
+      id: string | number;
+      formData: Pick<Plate, "name" | "description" | "ingredients" | "price">;
     }
-    setMenu((prev) => [...prev, { ...menuItem, id }]);
+  >({
+    mutationKey: ["api", "owner", "plates", "id"],
+    mutationFn: (data) => OwnerApi.updatePlate(token, data.id, data.formData),
+    onSuccess: (data) => {
+      console.log(data);
+      closeModal();
+      queryClient.invalidateQueries(["api", "owner", "plates"]);
+    },
+    onError: (err) => {
+      console.log(err);
+    },
+  });
+
+  const addNewMenuItem = (
+    formData: Pick<Plate, "name" | "description" | "ingredients" | "price">
+  ) => {
+    console.log("test");
+    if (menuItemToEdit) {
+      return;
+    }
+    plateMutate.mutate(formData);
   };
 
-  const removeMenuItem = (id: number) => {
-    setMenu((prev) => prev.filter((item) => item.id !== id));
+  const removeMenuItem = (id: number | string) => {
+    deletePlateMutate.mutate(id);
   };
-
-  const editMenuItem = (data: IMenuItem) => {
+  const editMenuItem = (
+    data: Pick<Plate, "id" | "name" | "description" | "ingredients" | "price">
+  ) => {
     setMenuItemToEdit(data);
     setIsModalOpen(true);
   };
-  const updateMenuItem = (data: IMenuItem) => {
-    if (!menuItemToEdit) return;
-    const updatedMenu = menu.map((menuItem) => {
-      if (menuItem.id === menuItemToEdit.id) {
-        return {
-          ...data,
-          id: menuItem.id,
-          ingredients:
-            typeof data.ingredients === "string"
-              ? makeNewIngredients(data.ingredients)
-              : data.ingredients,
-        };
-      }
-      return menuItem;
-    });
-    setMenu(updatedMenu);
+  const updateMenuItem = (
+    formData: Pick<Plate, "name" | "description" | "ingredients" | "price">
+  ) => {
+    if (!menuItemToEdit) {
+      return;
+    }
+    updatePlateMutate.mutate({ id: menuItemToEdit.id, formData });
   };
-
   const closeModal = () => {
     setMenuItemToEdit(null);
     setIsModalOpen(false);
@@ -86,40 +115,45 @@ function MainMenu() {
       <AnimatePresence>
         {isModalOpen && (
           <FormModal
-            getData={(data: IMenuItem) =>
-              menuItemToEdit !== null
-                ? updateMenuItem(data)
-                : addNewMenuItem(data)
-            }
-            pageTitle="add new item"
+            returnData={(data) => {
+              updateMenuItem(
+                data as Pick<
+                  Plate,
+                  "name" | "description" | "ingredients" | "price"
+                >
+              );
+              addNewMenuItem(
+                data as Pick<
+                  Plate,
+                  "name" | "description" | "ingredients" | "price"
+                >
+              );
+            }}
+            modalTitle={menuItemToEdit ? "update plate" : "add plate"}
+            submitBtnTitle={menuItemToEdit ? "update" : "add"}
             fields={[
-              { name: "name", type: "text" },
-              { name: "price", type: "text" },
-              { name: "description", type: "text" },
-              { name: "ingredients", type: "text" },
+              {
+                name: "name",
+                type: "text",
+                value: menuItemToEdit ? menuItemToEdit.name : "",
+              },
+              {
+                name: "description",
+                type: "text",
+                value: menuItemToEdit ? menuItemToEdit.description : "",
+              },
+              {
+                name: "ingredients",
+                type: "text",
+                value: menuItemToEdit ? menuItemToEdit.ingredients : "",
+              },
+              {
+                name: "price",
+                type: "number",
+                value: menuItemToEdit ? menuItemToEdit.price : "",
+              },
             ]}
-            fieldsValue={
-              menuItemToEdit
-                ? {
-                    name: { value: menuItemToEdit.name, error: null },
-                    price: { value: menuItemToEdit.price, error: null },
-                    description: {
-                      value: menuItemToEdit.description,
-                      error: null,
-                    },
-                    ingredients: {
-                      value:
-                        typeof menuItemToEdit.ingredients === "string"
-                          ? menuItemToEdit.ingredients
-                          : menuItemToEdit.ingredients
-                              .map((ing) => ing.name)
-                              .join(","),
-                      error: null,
-                    },
-                  }
-                : undefined
-            }
-            closeModal={closeModal}
+            closeModal={() => closeModal()}
           />
         )}
       </AnimatePresence>
@@ -147,45 +181,63 @@ function MainMenu() {
           </tr>
         </thead>
         <tbody>
-          {menu.map((item) => (
-            <tr key={item.id}>
-              <td className="border border-solid border-black p-2">
-                {item.name}
-              </td>
-              <td className="border border-solid border-black p-2">
-                {item.price}
-              </td>
-              <td className="border border-solid border-black p-2">
-                {item.description}
-              </td>
-              {typeof item.ingredients !== "string" && (
+          {platesQuery.isLoading ? (
+            <tr>
+              <td colSpan={5}>Loading...</td>
+            </tr>
+          ) : platesQuery.data && platesQuery.data.res.length ? (
+            platesQuery.data.res.map((item) => (
+              <tr key={item.id}>
+                <td className="border border-solid border-black p-2">
+                  {item.name}
+                </td>
+                <td className="border border-solid border-black p-2">
+                  {item.price}$
+                </td>
+                <td className="border border-solid border-black p-2">
+                  {item.description}
+                </td>
                 <td className="border border-solid border-black p-2">
                   <div className="flex items-center gap-2">
-                    {item.ingredients.map((ing) => {
-                      return <span key={ing.id}>{ing.name}</span>;
+                    {item.ingredients.split(",").map((ing, index) => {
+                      return <span key={index}>{ing.trim()}</span>;
                     })}
                   </div>
                 </td>
-              )}
-              <td className="border border-solid border-black p-2">
-                <div className="flex gap-2 items-center justify-center">
-                  <button
-                    className="text-red-500"
-                    onClick={() => removeMenuItem(item.id)}
-                  >
-                    <DeleteIcon />
-                  </button>
+                <td className="border border-solid border-black p-2">
+                  <div className="flex gap-2 items-center justify-center">
+                    <button
+                      className="text-red-500"
+                      onClick={() => removeMenuItem(item.id)}
+                    >
+                      <DeleteIcon />
+                    </button>
 
-                  <button
-                    className="text-blue-500"
-                    onClick={() => editMenuItem(item)}
-                  >
-                    <EditIcon />
-                  </button>
-                </div>
+                    <button
+                      className="text-blue-500"
+                      onClick={() =>
+                        editMenuItem({
+                          id: item.id,
+                          name: item.name,
+                          description: item.description,
+                          ingredients: item.ingredients,
+                          price: item.price,
+                        })
+                      }
+                    >
+                      <EditIcon />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={3} className="p-2 text-red-500">
+                No plates found
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </>
