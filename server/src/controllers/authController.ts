@@ -53,9 +53,16 @@ class AuthController {
         specificUser.email,
         lives_in
       );
-      return res
-        .status(200)
-        .json({ res: { token, user: { ...user, name: specificUser.name } } });
+      return res.status(200).json({
+        res: {
+          token,
+          user: {
+            name: specificUser.name,
+            email: user.email,
+            lives_in: user.lives_in,
+          },
+        },
+      });
     } catch (err) {
       next(err);
     }
@@ -122,7 +129,14 @@ class AuthController {
       );
 
       return res.status(200).json({
-        res: { token, user: { ...user, name: specificUser[0].name } },
+        res: {
+          token,
+          user: {
+            name: specificUser[0].name,
+            email: user.email,
+            lives_in: user.lives_in,
+          },
+        },
       });
     } catch (err) {
       next(err);

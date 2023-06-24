@@ -32,12 +32,15 @@ const getAll = async (owner_id: number | string): Promise<WaiterModel[]> => {
 
 const getById = async (
   id: string | number,
-  restaurant_id: string | number
+  restaurant_id?: string | number
 ): Promise<WaiterModel | null> => {
-  const res = (await query(
-    "select * from waiters where id = ? and restaurant_id = ?",
-    [id, restaurant_id]
-  )) as WaiterModel[];
+  let _query = "select * from waiters where id = ?";
+  let queryValues = [id];
+  if (restaurant_id) {
+    _query += " and restaurant_id = ?";
+    queryValues.push(restaurant_id);
+  }
+  const res = (await query(_query, queryValues)) as WaiterModel[];
   if (res.length === 0) {
     return null;
   }
@@ -61,7 +64,7 @@ const deleteById = async (
 const updateCols = async (
   id: number | string,
   cols: Partial<WaiterModel>,
-  restaurant_id: number | string
+  restaurant_id?: number | string
 ): Promise<WaiterModel> => {
   let _query = "update waiters set";
   const queryValues: (string | number)[] = [];
@@ -70,16 +73,26 @@ const updateCols = async (
     _query += ` ${key} = ?,`;
     queryValues.push(value);
   });
+
   _query = _query.slice(0, _query.length - 1);
-  _query += " where restaurant_id = ? and id = ?";
-  queryValues.push(restaurant_id, id);
+  _query += " where id = ?";
+  queryValues.push(id);
+
+  if (restaurant_id) {
+    _query += " and restaurant_id = ?";
+    queryValues.push(restaurant_id);
+  }
+
   await query(_query, queryValues);
+
   const updatedWaiter = await getById(id, restaurant_id);
   if (!updatedWaiter) {
     throw Error("this not suppose to happend just to make ts happy");
   }
+
   return updatedWaiter;
 };
+
 const WaiterRepository = {
   createWaiter,
   getById,
