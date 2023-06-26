@@ -20,12 +20,20 @@ waiterRouter.put("/availability", (req, res, next) =>
 );
 
 //make command
-waiterRouter.post("/commands");
+waiterRouter.post("/commands", (req, res, next) =>
+  WaiterController.makeCommand(req as CustomRequest, res, next)
+);
 //get commands to serve
-waiterRouter.get("/commands");
+waiterRouter.get("/commands", (req, res, next) =>
+  WaiterController.getCommandsToServe(req as CustomRequest, res, next)
+);
 //set command as served
-waiterRouter.put("/commands/id/served");
+waiterRouter.put("/commands/:id/served", (req: Request, res, next) =>
+  WaiterController.setCommandAsServed(req as CustomRequest, res, next)
+);
 //set command as payed
-waiterRouter.put("/commands/id/payed");
+waiterRouter.put("/commands/:id/payed", (req: Request, res, next) =>
+  WaiterController.setCommandAsPayed(req as CustomRequest, res, next)
+);
 
 export default waiterRouter;

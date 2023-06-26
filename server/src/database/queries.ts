@@ -127,7 +127,7 @@ const QUERIES = {
     plate_id INT,
     waiter_id INT,
     chef_id INT,
-    date Date,
+    date Date DEFAULT (CURRENT_DATE),
     restaurant_id INT,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

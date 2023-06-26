@@ -79,12 +79,49 @@ const updateCols = async (
   }
   return updatedChef;
 };
+
+/* id INT AUTO_INCREMENT PRIMARY KEY, */
+/* is_cooked BOOL DEFAULT 0, */
+/* is_served BOOL DEFAULT 0, */
+/* is_payed BOOL DEFAULT 0, */
+/* plate_id INT, */
+/* waiter_id INT, */
+/* chef_id INT, */
+/* date Date DEFAULT (CURRENT_DATE), */
+/* restaurant_id INT, */
+/* createdAt DATETIME DEFAULT CURRENT_TIMESTAMP, */
+/* updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, */
+/* FOREIGN KEY (plate_id) REFERENCES plates(id), */
+/* FOREIGN KEY (restaurant_id) REFERENCES restaurants(id), */
+/* FOREIGN KEY (waiter_id) REFERENCES waiters(id), */
+/* FOREIGN KEY (chef_id) REFERENCES chefs(id) */
+const getAvailableChef = async (
+  restaurant_id: number | string
+): Promise<ChefModel | null> => {
+  console.log(restaurant_id);
+  const res = (await query(
+    `select *, COALESCE(chef_commands,0) as chef_commands from chefs ch 
+                        left join (select chef_id, count(*) as chef_commands from commands group by id) as cmd
+                        on cmd.chef_id = ch.id
+                        where ch.is_available = 1 and ch.restaurant_id = ?
+                        order by chef_commands 
+                        limit 1`,
+    [restaurant_id]
+  )) as ChefModel[];
+  console.log(res);
+  if (res.length === 0) {
+    return null;
+  }
+  return res[0];
+};
+
 const ChefRepository = {
   createChef,
   getById,
   getAll,
   deleteById,
   updateCols,
+  getAvailableChef,
 };
 
 export default ChefRepository;
