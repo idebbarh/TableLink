@@ -93,12 +93,30 @@ const updateCols = async (
   return updatedWaiter;
 };
 
+const getAvailableWaiter = async (
+  restaurant_id: string | number
+): Promise<WaiterModel | null> => {
+  const res = (await query(
+    `select *, COALESCE(waiter_commands,0) from waiters w
+                        left join (select waiter_id,count(*) as waiter_commands from commands group by waiter_id) as cmd on w.id = cmd.waiter_id
+                        where w.restaurant_id = ? and w.is_available = 1
+                        order by waiter_commands 
+                        limit 1
+        `,
+    [restaurant_id]
+  )) as WaiterModel[];
+  if (res.length === 0) {
+    return null;
+  }
+  return res[0];
+};
 const WaiterRepository = {
   createWaiter,
   getById,
   getAll,
   deleteById,
   updateCols,
+  getAvailableWaiter,
 };
 
 export default WaiterRepository;

@@ -11,6 +11,7 @@ import ReviewController from "./controllers/reviewController";
 import ReservationController from "./controllers/reservationController";
 import cors from "cors";
 import waiterRouter from "./routes/waiterRoutes";
+import chefRouter from "./routes/chefRoutes";
 
 interface CustomRequest extends Request {
   user: {
@@ -53,6 +54,14 @@ app.use(
   (req, res, next) =>
     userTypeProtector(req as CustomRequest, res, next, "waiters"),
   waiterRouter
+);
+//chef routes
+app.use(
+  "/api/chef",
+  (req, res, next) => globalProtector(req as CustomRequest, res, next),
+  (req, res, next) =>
+    userTypeProtector(req as CustomRequest, res, next, "chefs"),
+  chefRouter
 );
 //restaurant routes
 app.get("/api/restaurants", RestaurantController.getRestaurants);

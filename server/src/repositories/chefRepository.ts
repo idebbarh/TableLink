@@ -32,12 +32,16 @@ const getAll = async (owner_id: number | string): Promise<ChefModel[]> => {
 
 const getById = async (
   id: string | number,
-  restaurant_id: string | number
+  restaurant_id?: string | number
 ): Promise<ChefModel | null> => {
-  const res = (await query(
-    "select * from chefs where id = ? and restaurant_id = ?",
-    [id, restaurant_id]
-  )) as ChefModel[];
+  let _query = "select * from chefs where id = ?";
+  const queryValues: (number | string)[] = [id];
+  if (restaurant_id) {
+    _query += " and restaurant_id = ?";
+    queryValues.push(restaurant_id);
+  }
+
+  const res = (await query(_query, queryValues)) as ChefModel[];
   if (res.length === 0) {
     return null;
   }
@@ -60,7 +64,7 @@ const deleteById = async (
 const updateCols = async (
   id: number | string,
   cols: Partial<ChefModel>,
-  restaurant_id: number | string
+  restaurant_id?: number | string
 ): Promise<ChefModel> => {
   let _query = "update chefs set";
   const queryValues: (string | number)[] = [];
@@ -70,8 +74,14 @@ const updateCols = async (
     queryValues.push(value);
   });
   _query = _query.slice(0, _query.length - 1);
-  _query += " where restaurant_id = ? and id = ?";
-  queryValues.push(restaurant_id, id);
+  _query += " where id = ?";
+  queryValues.push(id);
+
+  if (restaurant_id) {
+    _query += " and restaurant_id = ?";
+    queryValues.push(restaurant_id);
+  }
+
   await query(_query, queryValues);
   const updatedChef = await getById(id, restaurant_id);
   if (!updatedChef) {
@@ -80,28 +90,13 @@ const updateCols = async (
   return updatedChef;
 };
 
-/* id INT AUTO_INCREMENT PRIMARY KEY, */
-/* is_cooked BOOL DEFAULT 0, */
-/* is_served BOOL DEFAULT 0, */
-/* is_payed BOOL DEFAULT 0, */
-/* plate_id INT, */
-/* waiter_id INT, */
-/* chef_id INT, */
-/* date Date DEFAULT (CURRENT_DATE), */
-/* restaurant_id INT, */
-/* createdAt DATETIME DEFAULT CURRENT_TIMESTAMP, */
-/* updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, */
-/* FOREIGN KEY (plate_id) REFERENCES plates(id), */
-/* FOREIGN KEY (restaurant_id) REFERENCES restaurants(id), */
-/* FOREIGN KEY (waiter_id) REFERENCES waiters(id), */
-/* FOREIGN KEY (chef_id) REFERENCES chefs(id) */
 const getAvailableChef = async (
   restaurant_id: number | string
 ): Promise<ChefModel | null> => {
   console.log(restaurant_id);
   const res = (await query(
     `select *, COALESCE(chef_commands,0) as chef_commands from chefs ch 
-                        left join (select chef_id, count(*) as chef_commands from commands group by id) as cmd
+                        left join (select chef_id, count(*) as chef_commands from commands group by chef_id) as cmd
                         on cmd.chef_id = ch.id
                         where ch.is_available = 1 and ch.restaurant_id = ?
                         order by chef_commands 
