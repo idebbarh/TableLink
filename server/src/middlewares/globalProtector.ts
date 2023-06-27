@@ -21,12 +21,6 @@ const globalProtector = (
 ) => {
   const bearer: string | undefined = req.headers.authorization;
 
-  console.log("-------------------------------");
-  console.log(req.method);
-  console.log("###############################");
-  console.log(req.headers);
-  console.log("-------------------------------");
-
   if (!bearer) {
     return res.status(401).json({ errorMessage: "not auth" });
   }

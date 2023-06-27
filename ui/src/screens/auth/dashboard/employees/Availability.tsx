@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import ChefApi from "../../../../api/chef";
 import WaiterApi from "../../../../api/waiter";
 import ToggleSwitch from "../../../../components/auth/ToggleSwitch";
 import { selectUser } from "../../../../redux/slices/userSlice";
@@ -70,12 +71,49 @@ function WaiterAvailability({ token }: { token: string }) {
   );
 }
 function ChefAvailability({ token }: { token: string }) {
-  const [availability, setAvailability] = useState<boolean>(false);
+  const queryClient = useQueryClient();
+
+  const availabilityQuery = useQuery<{ res: Availability }, MyKnownError>({
+    queryKey: ["api", "chef", "availability"],
+    queryFn: () => ChefApi.getAvailability(token),
+    onSuccess: (data) => console.log(data),
+    onError: (err) => console.log(err),
+  });
+
+  const availabilityMutation = useMutation<
+    { res: Availability },
+    MyKnownError,
+    string
+  >({
+    mutationKey: ["api", "chef", "availability"],
+    mutationFn: (token) => ChefApi.toggleAvailability(token),
+    onSuccess: (data) => {
+      console.log(data);
+      queryClient.invalidateQueries(["api", "chef", "availability"]);
+    },
+    onError: (err) => console.log(err),
+  });
+
+  const toggle = () => {
+    availabilityMutation.mutate(token);
+  };
+
+  if (availabilityQuery.isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (availabilityQuery.isError) {
+    return <div>{availabilityQuery.error.errorMessage}</div>;
+  }
+
+  if (!availabilityQuery.data) {
+    return <div>Something wrong happend</div>;
+  }
   return (
     <>
       <ToggleSwitch
-        isOn={availability}
-        toggle={() => setAvailability((prevState) => !prevState)}
+        isOn={availabilityQuery.data.res.is_available === 1 ? true : false}
+        toggle={() => toggle()}
       />
     </>
   );
