@@ -10,16 +10,6 @@ import NotAuth from "./screens/notAuth/NotAuth";
 import Signin from "./screens/notAuth/signin/Signin";
 import Signup from "./screens/notAuth/signup/Signup";
 
-interface RestaurantModel {
-  id: number | string;
-  name: string;
-  tele: string | null;
-  description: string | null;
-  owner_id: number | string;
-  tables_number: number | null;
-  createdAt: string;
-  updatedAt: string;
-}
 function App() {
   const user = useSelector(selectUser);
   const path = useLocation();
@@ -69,7 +59,10 @@ function App() {
         <Route
           path="/dashboard/*"
           element={
-            user.user && user.user.lives_in === "owners" ? (
+            user.user &&
+            (user.user.lives_in === "owners" ||
+              user.user.lives_in === "waiters" ||
+              user.user.lives_in === "chefs") ? (
               <Dashboard />
             ) : (
               <Navigate to={"/"} replace={true} />

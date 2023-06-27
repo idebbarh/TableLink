@@ -1,6 +1,7 @@
 declare interface SideBarOptionType {
   title: string;
   path: string;
+  validIn: ("owners" | "waiters" | "chefs")[];
 }
 
 declare interface IEmployee {
@@ -133,4 +134,7 @@ declare interface Plate {
   restaurant_id: number | string;
   createdAt: string;
   updatedAt: string;
+}
+declare interface Availability {
+  is_available: 0 | 1;
 }

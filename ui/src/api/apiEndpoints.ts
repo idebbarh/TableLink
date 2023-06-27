@@ -45,6 +45,20 @@ const apiEndpoints = {
     makeReview: "/api/client/review/{{id}}",
     getRate: "/api/client/review/{{id}}",
   },
+  waiter: {
+    getAvailibility: "/api/waiter/availability",
+    toggleAvailability: "/api/waiter/availability",
+    getCommandsToServe: "/api/waiter/commands",
+    makeCommand: "/api/waiter/commands",
+    setCommandAsServed: "/api/waiter/commands/{{id}}/served",
+    setCommandAsPayed: "/api/waiter/commands/{{id}}/payed",
+  },
+  chef: {
+    getAvailibility: "/api/chef/availability",
+    toggleAvailability: "/api/chef/availability",
+    getCommandsToCook: "/api/chef/commands",
+    setCommandAsServed: "/api/chef/commands/{{id}}/cooked",
+  },
   restaurants: {
     getAllRestaurants: "/api/restaurants",
     getRestaurantById: "/api/restaurants/{{id}}",
