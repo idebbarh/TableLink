@@ -142,6 +142,7 @@ declare interface Availability {
 
 declare interface Command {
   id: string | number;
+  name: string;
   is_cooked: 0 | 1;
   is_served: 0 | 1;
   is_payed: 0 | 1;

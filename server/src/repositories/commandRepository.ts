@@ -32,13 +32,15 @@ const getById = async (id: string | number): Promise<CommandModel | null> => {
 const getManyByQuery = async (
   queryObj: Partial<CommandModel>
 ): Promise<CommandModel[]> => {
-  let _query = "select * from commands where";
+  let _query =
+    "select cmd.*, pl.name from commands cmd join plates pl on cmd.plate_id = pl.id where";
   const queryValues: (string | number)[] = [];
   Object.entries(queryObj).forEach(([key, value]) => {
-    _query += ` ${key} = ? and`;
+    _query += ` cmd.${key} = ? and`;
     queryValues.push(value);
   });
   _query = _query.slice(0, _query.length - 3);
+  _query += "order by cmd.createdAt";
   const commands = (await query(_query, queryValues)) as CommandModel[];
   return commands;
 };

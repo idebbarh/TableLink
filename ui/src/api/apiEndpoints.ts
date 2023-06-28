@@ -57,7 +57,7 @@ const apiEndpoints = {
     getAvailibility: "/api/chef/availability",
     toggleAvailability: "/api/chef/availability",
     getCommandsToCook: "/api/chef/commands",
-    setCommandAsServed: "/api/chef/commands/{{id}}/cooked",
+    setCommandAsCooked: "/api/chef/commands/{{id}}/cooked",
   },
   restaurants: {
     getAllRestaurants: "/api/restaurants",

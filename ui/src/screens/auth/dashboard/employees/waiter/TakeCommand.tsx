@@ -26,9 +26,11 @@ function TakeCommand({ token }: { token: string }) {
     if (successMsg === null) {
       return;
     }
+
     const timeout = setTimeout(() => {
       setSuccessMsg(null);
     }, 3000);
+
     return () => clearTimeout(timeout);
   }, [successMsg]);
 
@@ -36,9 +38,11 @@ function TakeCommand({ token }: { token: string }) {
     if (errorMsg === null) {
       return;
     }
+
     const timeout = setTimeout(() => {
       setErrorMsg(null);
     }, 3000);
+
     return () => clearTimeout(timeout);
   }, [errorMsg]);
 
