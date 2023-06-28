@@ -14,6 +14,13 @@ import { query } from "../database/mysql";
 import WaiterModel from "../models/waiterModel";
 import ChefModel from "../models/chefModel";
 
+function instanceOfT<T>(obj: any, props: (keyof T)[]): obj is T {
+  if (typeof obj === "object") {
+    return props.every((prop) => prop in obj);
+  }
+  return false;
+}
+
 class AuthController {
   static async signup(req: Request, res: Response, next: NextFunction) {
     let specificUser: ClientModel | OwnerModel;
@@ -128,14 +135,27 @@ class AuthController {
         user.lives_in
       );
 
+      const resUserValue: {
+        name: string;
+        email: string;
+        lives_in: string;
+        restaurant_id?: number | string;
+      } = {
+        name: specificUser[0].name,
+        email: user.email,
+        lives_in: user.lives_in,
+      };
+
+      if (
+        instanceOfT<WaiterModel>(specificUser[0], ["restaurant_id"]) ||
+        instanceOfT<ChefModel>(specificUser[0], ["restaurant_id"])
+      ) {
+        resUserValue["restaurant_id"] = specificUser[0].restaurant_id;
+      }
       return res.status(200).json({
         res: {
           token,
-          user: {
-            name: specificUser[0].name,
-            email: user.email,
-            lives_in: user.lives_in,
-          },
+          user: resUserValue,
         },
       });
     } catch (err) {

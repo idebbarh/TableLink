@@ -38,6 +38,7 @@ declare interface User {
   email: string;
   name: string;
   lives_in: "owners" | "clients" | "waiters" | "chefs";
+  restaurant_id?: number | string;
 }
 
 declare type SignupFromData = {
@@ -137,4 +138,18 @@ declare interface Plate {
 }
 declare interface Availability {
   is_available: 0 | 1;
+}
+
+declare interface Command {
+  id: string | number;
+  is_cooked: 0 | 1;
+  is_served: 0 | 1;
+  is_payed: 0 | 1;
+  plate_id: string | number;
+  waiter_id: string | number;
+  chef_id: string | number;
+  date: string;
+  restaurant_id: string | number;
+  createdAt: string;
+  updatedAt: string;
 }

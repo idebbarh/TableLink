@@ -31,6 +31,21 @@ class WaiterApi {
       throw errValue as MyKnownError;
     }
   }
+  static async makeCommand(id: number | string, token: string) {
+    try {
+      const res = await axios.post(
+        baseUrl + apiEndpoints.waiter.makeCommand,
+        { plate_id: id },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return res.data;
+    } catch (err) {
+      const errValue = (err as AxiosError)?.response?.data;
+      throw errValue as MyKnownError;
+    }
+  }
 }
 
 export default WaiterApi;

@@ -13,6 +13,8 @@ import Waiters from "./restaurantOwner/Waiters";
 import Settings from "./Settings";
 import EmployeesRoutesProtector from "./employees/EmployeesRoutesProtector";
 import Availability from "./employees/Availability";
+import WaiterRoutesProtector from "./employees/waiter/WaiterRoutesProtector";
+import TakeCommand from "./employees/waiter/TakeCommand";
 
 const sideBarOptions: SideBarOptionType[] = [
   {
@@ -24,6 +26,11 @@ const sideBarOptions: SideBarOptionType[] = [
     title: "Availability",
     path: "availability",
     validIn: ["waiters", "chefs"],
+  },
+  {
+    title: "take command",
+    path: "take_command",
+    validIn: ["waiters"],
   },
   {
     title: "Waiters",
@@ -130,6 +137,20 @@ function Dashboard() {
             >
               <Route path="availability" element={<Availability />} />
               {/* waiters routes protector */}
+              <Route
+                element={
+                  user.user.lives_in === "waiters" ? (
+                    <WaiterRoutesProtector />
+                  ) : (
+                    <Navigate to={""} replace={true} />
+                  )
+                }
+              >
+                <Route
+                  path="take_command"
+                  element={<TakeCommand token={user.token} />}
+                />
+              </Route>
               {/* chefs routes protector */}
             </Route>
           </Routes>
