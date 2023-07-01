@@ -93,16 +93,16 @@ const updateCols = async (
 const getAvailableChef = async (
   restaurant_id: number | string
 ): Promise<ChefModel | null> => {
-  console.log(restaurant_id);
   const res = (await query(
     `select *, COALESCE(chef_commands,0) as chef_commands from chefs ch 
-                        left join (select chef_id, count(*) as chef_commands from commands group by chef_id) as cmd
+                        left join (select chef_id, count(*) as chef_commands from commands where is_cooked = 0 group by chef_id) as cmd
                         on cmd.chef_id = ch.id
                         where ch.is_available = 1 and ch.restaurant_id = ?
-                        order by chef_commands 
+                        order by chef_commands asc 
                         limit 1`,
     [restaurant_id]
   )) as ChefModel[];
+
   console.log(res);
   if (res.length === 0) {
     return null;
