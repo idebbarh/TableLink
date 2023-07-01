@@ -2,11 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiEndpoints from "../../../../../api/apiEndpoints";
 import WaiterApi from "../../../../../api/waiter";
 
-function CommandsToServe({ token }: { token: string }) {
+function CommandToPay({ token }: { token: string }) {
   const queryClient = useQueryClient();
   const commandsQuery = useQuery<{ res: Command[] }, MyKnownError>({
-    queryKey: apiEndpoints.waiter.getCommandsToServe.split("/"),
-    queryFn: () => WaiterApi.getCommandsToServe(token),
+    queryKey: apiEndpoints.waiter.getCommandsToPay.split("/"),
+    queryFn: () => WaiterApi.getCommandsToPay(token),
     onSuccess: (data) => console.log(data),
     onError: (err) => console.log(err),
   });
@@ -16,24 +16,24 @@ function CommandsToServe({ token }: { token: string }) {
     MyKnownError,
     number | string
   >({
-    mutationKey: ["api", "waiter", "commands", "id", "served"],
-    mutationFn: (id) => WaiterApi.setCommandAsServed(id, token),
+    mutationKey: apiEndpoints.waiter.setCommandAsPayed.split("/"),
+    mutationFn: (id) => WaiterApi.setCommandAsPayed(id, token),
     onSuccess: (data) => {
       console.log(data);
       queryClient.invalidateQueries(
-        apiEndpoints.waiter.getCommandsToServe.split("/")
+        apiEndpoints.waiter.getCommandsToPay.split("/")
       );
     },
     onError: (err) => console.log(err),
   });
 
-  const served = (id: number | string) => {
+  const payed = (id: number | string) => {
     commandsMutation.mutate(id);
   };
   return (
     <>
       <h2 className="text-[1.6rem] font-bold capitalize text-black">
-        commands to serve
+        commands to pay
       </h2>
 
       <div className="grid grid-cols-auto-fit gap-4 mt-4">
@@ -55,21 +55,20 @@ function CommandsToServe({ token }: { token: string }) {
               <div className="p-2 border-t border-black">
                 <button
                   className="font-bold w-fit mx-auto block p-2 capitalize border border-black text-black transition-colors duration-300 ease-in-out hover:bg-black hover:text-white"
-                  onClick={index === 0 ? () => served(item.id) : undefined}
+                  onClick={index === 0 ? () => payed(item.id) : undefined}
                 >
-                  served
+                  payed
                 </button>
               </div>
             </div>
           ))
         ) : (
           <p className="mt-4 text-red-500">
-            not plates to serve in this moment, take a rest
+            not plates need to pay in this moment
           </p>
         )}
       </div>
     </>
   );
 }
-
-export default CommandsToServe;
+export default CommandToPay;

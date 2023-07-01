@@ -26,10 +26,13 @@ waiterRouter.post("/commands", (req, res, next) =>
 );
 
 //get commands to serve
-waiterRouter.get("/commands", (req, res, next) =>
+waiterRouter.get("/commands/serve", (req, res, next) =>
   WaiterController.getCommandsToServe(req as CustomRequest, res, next)
 );
-
+//get commands to pay
+waiterRouter.get("/commands/pay", (req, res, next) =>
+  WaiterController.getCommandsToPay(req as CustomRequest, res, next)
+);
 //set command as served
 waiterRouter.put("/commands/:id/served", (req: Request, res, next) =>
   WaiterController.setCommandAsServed(req as CustomRequest, res, next)

@@ -48,7 +48,8 @@ const apiEndpoints = {
   waiter: {
     getAvailibility: "/api/waiter/availability",
     toggleAvailability: "/api/waiter/availability",
-    getCommandsToServe: "/api/waiter/commands",
+    getCommandsToServe: "/api/waiter/commands/serve",
+    getCommandsToPay: "/api/waiter/commands/pay",
     makeCommand: "/api/waiter/commands",
     setCommandAsServed: "/api/waiter/commands/{{id}}/served",
     setCommandAsPayed: "/api/waiter/commands/{{id}}/payed",
