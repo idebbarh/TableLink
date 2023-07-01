@@ -98,7 +98,7 @@ const getAvailableWaiter = async (
 ): Promise<WaiterModel | null> => {
   const res = (await query(
     `select *, COALESCE(waiter_commands,0) from waiters w
-                        left join (select waiter_id,count(*) as waiter_commands from commands group by waiter_id) as cmd on w.id = cmd.waiter_id
+                        left join (select waiter_id,count(*) as waiter_commands from commands where is_served = 0 and is_cooked = 1 group by waiter_id) as cmd on w.id = cmd.waiter_id
                         where w.restaurant_id = ? and w.is_available = 1
                         order by waiter_commands 
                         limit 1
