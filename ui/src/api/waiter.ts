@@ -46,6 +46,41 @@ class WaiterApi {
       throw errValue as MyKnownError;
     }
   }
+
+  static async getCommandsToServe(token: string) {
+    try {
+      const res = await axios.get(
+        baseUrl + apiEndpoints.waiter.getCommandsToServe,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return res.data;
+    } catch (err) {
+      const errValue = (err as AxiosError)?.response?.data;
+      throw errValue as MyKnownError;
+    }
+  }
+
+  static async setCommandAsServed(id: number | string, token: string) {
+    try {
+      const res = await axios.put(
+        baseUrl +
+          apiEndpoints.waiter.setCommandAsServed.replace(
+            "{{id}}",
+            id.toString()
+          ),
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return res.data;
+    } catch (err) {
+      const errValue = (err as AxiosError)?.response?.data;
+      throw errValue as MyKnownError;
+    }
+  }
 }
 
 export default WaiterApi;

@@ -17,6 +17,7 @@ import WaiterRoutesProtector from "./employees/waiter/WaiterRoutesProtector";
 import TakeCommand from "./employees/waiter/TakeCommand";
 import CommandsToCook from "./employees/chef/CommandsToCook";
 import ChefsRoutesProtector from "./employees/chef/ChefsRoutesProtector";
+import CommandsToServe from "./employees/waiter/CommandsToServe";
 
 const sideBarOptions: SideBarOptionType[] = [
   {
@@ -38,6 +39,11 @@ const sideBarOptions: SideBarOptionType[] = [
     title: "plates to cook",
     path: "plates_to_cook",
     validIn: ["chefs"],
+  },
+  {
+    title: "plates to serve",
+    path: "plates_to_serve",
+    validIn: ["waiters"],
   },
   {
     title: "Waiters",
@@ -156,6 +162,11 @@ function Dashboard() {
                 <Route
                   path="take_command"
                   element={<TakeCommand token={user.token} />}
+                />
+
+                <Route
+                  path="plates_to_serve"
+                  element={<CommandsToServe token={user.token} />}
                 />
               </Route>
               {/* chefs routes protector */}
