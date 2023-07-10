@@ -31,6 +31,9 @@ const apiEndpoints = {
       getAllReservations: "/api/owner/reservations",
       deleteReservation: "/api/owner/reservations/{{id}}",
     },
+    commands: {
+      getAllCommands: "/api/owner/commands",
+    },
     statistics: {
       getRestaurantStatistics: "/api/owner/statistiques",
     },

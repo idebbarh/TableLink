@@ -19,6 +19,7 @@ import CommandsToCook from "./employees/chef/CommandsToCook";
 import ChefsRoutesProtector from "./employees/chef/ChefsRoutesProtector";
 import CommandsToServe from "./employees/waiter/CommandsToServe";
 import CommandToPay from "./employees/waiter/CommandsToPay";
+import RestaurantCommands from "./restaurantOwner/RestaurantCommands";
 
 const sideBarOptions: SideBarOptionType[] = [
   {
@@ -65,6 +66,11 @@ const sideBarOptions: SideBarOptionType[] = [
   {
     title: "Reservations",
     path: "reservations",
+    validIn: ["owners"],
+  },
+  {
+    title: "Commands",
+    path: "commands",
     validIn: ["owners"],
   },
   {
@@ -132,6 +138,10 @@ function Dashboard() {
               <Route
                 path="reservations"
                 element={<Reservations token={user.token} />}
+              />
+              <Route
+                path="commands"
+                element={<RestaurantCommands token={user.token} />}
               />
               <Route path="menu" element={<MainMenu token={user.token} />} />
               <Route

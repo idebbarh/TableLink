@@ -12,6 +12,8 @@ import ChefModel from "../models/chefModel";
 import PlateRepository from "../repositories/plateRepository";
 import ReservationRepository from "../repositories/reservationRepository";
 import StatisticRepository from "../repositories/statisticRepository";
+import CommandRepository from "../repositories/commandRepository";
+import CommandModel from "../models/commandModel";
 
 interface CustomRequest extends Request {
   user: {
@@ -474,6 +476,28 @@ class OwnerController {
       next(err);
     }
   }
+
+  static async getCommands(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const owner_id = req.user.userId;
+      const restaurant = await RestaurantRepository.getByQuery({ owner_id });
+      if (!restaurant) {
+        throw Error("maybe this owner doesn't have a restaurant");
+      }
+      const commands = (await CommandRepository.getManyByQuery({
+        restaurant_id: restaurant.id,
+      })) as CommandModel[];
+
+      res.status(200).json({ res: commands });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async getRestaurantStatistics(
     req: CustomRequest,
     res: Response,

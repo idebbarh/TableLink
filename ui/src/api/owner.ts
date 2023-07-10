@@ -194,6 +194,20 @@ class OwnerApi {
       throw errValue as MyKnownError;
     }
   }
+  //commands
+
+  static async getAllCommands(token: string) {
+    try {
+      const res = await axios.get(
+        baseUrl + apiEndpoints.owner.commands.getAllCommands,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return res.data;
+    } catch (err) {
+      const errValue = (err as AxiosError)?.response?.data;
+      throw errValue as MyKnownError;
+    }
+  }
   //statistics
   static async getRestaurantStatistics(token: string) {
     try {
