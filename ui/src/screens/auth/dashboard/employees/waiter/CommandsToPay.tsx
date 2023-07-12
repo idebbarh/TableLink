@@ -42,11 +42,7 @@ function CommandToPay({ token }: { token: string }) {
         ) : commandsQuery.data && commandsQuery.data.res.length ? (
           commandsQuery.data.res.map((item, index) => (
             <div
-              className={`flex flex-col gap-2 border border-black bg-white ${
-                index === 0
-                  ? "opacity-100 pointer-events-auto"
-                  : "opacity-40 pointer-events-none"
-              }`}
+              className="flex flex-col gap-2 border border-black bg-white"
               key={item.id}
             >
               <h4 className="p-2 text-lg font-bold text-dark">
@@ -55,7 +51,7 @@ function CommandToPay({ token }: { token: string }) {
               <div className="p-2 border-t border-black">
                 <button
                   className="font-bold w-fit mx-auto block p-2 capitalize border border-black text-black transition-colors duration-300 ease-in-out hover:bg-black hover:text-white"
-                  onClick={index === 0 ? () => payed(item.id) : undefined}
+                  onClick={() => payed(item.id)}
                 >
                   payed
                 </button>

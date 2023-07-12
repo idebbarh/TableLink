@@ -33,6 +33,7 @@ const apiEndpoints = {
     },
     commands: {
       getAllCommands: "/api/owner/commands",
+      deleteCommand: "/api/owner/commands/{{id}}",
     },
     statistics: {
       getRestaurantStatistics: "/api/owner/statistiques",

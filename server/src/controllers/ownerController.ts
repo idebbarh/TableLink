@@ -498,6 +498,29 @@ class OwnerController {
     }
   }
 
+  static async deleteCommand(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const owner_id = req.user.userId;
+      const command_id = req.params.id;
+      const restaurant = await RestaurantRepository.getByQuery({ owner_id });
+      if (!restaurant) {
+        throw Error("maybe this owner doesn't have a restaurant");
+      }
+      const command = await CommandRepository.getById(command_id);
+      if (!command) {
+        throw Error("command not found");
+      }
+      await CommandRepository.deleteById(command_id, restaurant.id);
+      res.status(201).json({ res: command });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async getRestaurantStatistics(
     req: CustomRequest,
     res: Response,

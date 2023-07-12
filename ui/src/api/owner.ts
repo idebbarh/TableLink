@@ -208,6 +208,22 @@ class OwnerApi {
       throw errValue as MyKnownError;
     }
   }
+  static async deleteCommand(id: string | number, token: string) {
+    try {
+      const res = await axios.delete(
+        baseUrl +
+          apiEndpoints.owner.commands.deleteCommand.replace(
+            "{{id}}",
+            id.toString()
+          ),
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return res.data;
+    } catch (err) {
+      const errValue = (err as AxiosError)?.response?.data;
+      throw errValue as MyKnownError;
+    }
+  }
   //statistics
   static async getRestaurantStatistics(token: string) {
     try {

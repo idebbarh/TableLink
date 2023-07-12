@@ -70,6 +70,10 @@ ownerRouter.delete("/reservations/:id", (req: Request, res, next) =>
 ownerRouter.get("/commands", (req, res, next) =>
   OwnerController.getCommands(req as CustomRequest, res, next)
 );
+//delete command
+ownerRouter.delete("/commands/:id", (req: Request, res, next) =>
+  OwnerController.deleteCommand(req as CustomRequest, res, next)
+);
 //statistiques
 ownerRouter.get("/statistiques", (req, res, next) =>
   OwnerController.getRestaurantStatistics(req as CustomRequest, res, next)

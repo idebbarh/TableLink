@@ -40,7 +40,7 @@ const getManyByQuery = async (
     queryValues.push(value);
   });
   _query = _query.slice(0, _query.length - 3);
-  _query += "order by cmd.createdAt";
+  _query += "order by cmd.updatedAt";
   const commands = (await query(_query, queryValues)) as CommandModel[];
   return commands;
 };
@@ -76,12 +76,26 @@ const updateCols = async (
 
   return updatedCommand;
 };
+const deleteById = async (
+  id: string | number,
+  restaurant_id: string | number
+): Promise<void> => {
+  await query("delete from commands where id = ? and restaurant_id = ?", [
+    id,
+    restaurant_id,
+  ]);
+  const deletedWaiter = await getById(id);
+  if (deletedWaiter) {
+    throw Error("something weard prevent from deleting the waiter");
+  }
+};
 
 const CommandRepository = {
   createCommand,
   getById,
   getManyByQuery,
   updateCols,
+  deleteById,
 };
 
 export default CommandRepository;

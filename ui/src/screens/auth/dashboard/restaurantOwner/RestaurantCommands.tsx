@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import OwnerApi from "../../../../api/owner";
+import DeleteIcon from "@mui/icons-material/Delete";
 import usePaginate from "../../../../hooks/usePaginate";
 
 type CommandsFilter = {
@@ -11,6 +12,7 @@ type CommandsFilter = {
 };
 function RestaurantCommands({ token }: { token: string }) {
   const { paginate, paginationLinks } = usePaginate(5);
+  const queryClient = useQueryClient();
   const [commandsFilter, setCommandsFilter] = useState<CommandsFilter>({
     isCooked: true,
     isServed: true,
@@ -24,9 +26,26 @@ function RestaurantCommands({ token }: { token: string }) {
     onSuccess: (data) => console.log(data),
     onError: (err) => console.log(err),
   });
+  const commandMutation = useMutation<
+    { res: Command },
+    MyKnownError,
+    string | number
+  >({
+    mutationKey: ["api", "owner", "commands", "id"],
+    mutationFn: (id) => OwnerApi.deleteCommand(id, token),
+    onSuccess: (data) => {
+      console.log(data);
+      queryClient.invalidateQueries(["api", "owner", "commands"]);
+    },
+    onError: (err) => console.log(err),
+  });
 
   function changeFilter(newVal: Partial<CommandsFilter>) {
     setCommandsFilter((prevState) => ({ ...prevState, ...newVal }));
+  }
+
+  function deleteCommand(id: string | number) {
+    commandMutation.mutate(id);
   }
 
   const commandsToShow = useMemo(() => {
@@ -102,12 +121,13 @@ function RestaurantCommands({ token }: { token: string }) {
             <th className="border border-solid border-black p-2">plate name</th>
             <th className="border border-solid border-black p-2">date</th>
             <th className="border border-solid border-black p-2">status</th>
+            <th className="border border-solid border-black p-2">actions</th>
           </tr>
         </thead>
         <tbody>
           {commandsQuery.isLoading ? (
             <tr>
-              <td colSpan={3}>Loading...</td>
+              <td colSpan={4}>Loading...</td>
             </tr>
           ) : commandsQuery.data && commandsQuery.data.res.length ? (
             [
@@ -125,24 +145,35 @@ function RestaurantCommands({ token }: { token: string }) {
                       <span
                         className={`px-4 py-2 rounded-3xl capitalize ${
                           command.is_cooked ? "bg-green-500" : "bg-red-500"
-                        } text-white text-sm w-full text-center`}
+                        } text-white text-sm text-center`}
                       >
                         {command.is_cooked ? "cooked" : "not cooked"}
                       </span>
                       <span
                         className={`px-4 py-2 rounded-3xl capitalize ${
                           command.is_served ? "bg-green-500" : "bg-red-500"
-                        } text-white text-sm w-full text-center`}
+                        } text-white text-sm text-center`}
                       >
                         {command.is_served ? "served" : "not served"}
                       </span>
                       <span
                         className={`px-4 py-2 rounded-3xl capitalize ${
                           command.is_payed ? "bg-green-500" : "bg-red-500"
-                        } text-white text-sm w-full text-center`}
+                        } text-white text-sm text-center`}
                       >
                         {command.is_payed ? "payed" : "not payed"}
                       </span>
+                    </div>
+                  </td>
+
+                  <td className="border border-solid border-black p-2">
+                    <div className="flex gap-2 items-center justify-center">
+                      <button
+                        className="text-red-500"
+                        onClick={() => deleteCommand(command.id)}
+                      >
+                        <DeleteIcon />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -150,7 +181,7 @@ function RestaurantCommands({ token }: { token: string }) {
               <tr key="paginationRow">
                 <td
                   className="border border-solid border-black p-2"
-                  colSpan={3}
+                  colSpan={4}
                 >
                   <div className="flex items-center justify-center gap-2 mt-4">
                     {paginationLinks(
@@ -164,7 +195,7 @@ function RestaurantCommands({ token }: { token: string }) {
             ]
           ) : (
             <tr>
-              <td colSpan={3} className="p-2 text-red-500">
+              <td colSpan={4} className="p-2 text-red-500">
                 no commands found
               </td>
             </tr>
