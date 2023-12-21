@@ -17,7 +17,7 @@ const queryWithTransaction = (
   queries: Array<{
     query: string;
     params?: any[];
-  }>
+  }>,
 ) => {
   return new Promise((resolve, reject) => {
     //start the transaction
@@ -34,7 +34,7 @@ const queryWithTransaction = (
       //and the result of all the prev transactions
       const nextTransaction = (
         transactionIndex: number,
-        transactionsResults: any[]
+        transactionsResults: any[],
       ) => {
         //if the index is equal to the lenght of the queries
         //then we are make all the transactions and we need to commit
@@ -68,7 +68,7 @@ const queryWithTransaction = (
               ...transactionsResults,
               res,
             ]);
-          }
+          },
         );
       };
       nextTransaction(0, []);
@@ -78,11 +78,11 @@ const queryWithTransaction = (
 
 //create tables
 const createTables = async () => {
-  Object.keys(QUERIES.CREATE_TABLES).forEach(async (key) => {
+  for (let key of Object.keys(QUERIES.CREATE_TABLES)) {
     await query(
-      QUERIES.CREATE_TABLES[key as keyof typeof QUERIES.CREATE_TABLES]
+      QUERIES.CREATE_TABLES[key as keyof typeof QUERIES.CREATE_TABLES],
     );
-  });
+  }
   console.log("tables created succussfully");
 };
 
